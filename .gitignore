@@ -1,0 +1,50 @@
+# 추출 결과(대용량)
+rfp_extract/
+rfp_report/sentences_all.csv
+rfp_report/smell.csv
+rfp_report/per_project_text/
+rfp_report/requirements_per_project_text/
+
+# 임시·캐시
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.coverage
+
+# 환경
+.venv/
+venv/
+env/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# OS
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# 임시 점검 스크립트
+peek*.py
+
+# 이 폴더에 섞여 있는 무관한 작업물
+.mcp.json
+package.json
+package-lock.json
+node_modules/
+*.skill
+
+# 작업 중 생성된 보조 데이터
+*.tmp
+*.bak
+~$*
+
+# 큰 결과물 (필요하면 Releases로)
+*.zip
+
+# 한컴 작업 흔적
+~$*.hwp
