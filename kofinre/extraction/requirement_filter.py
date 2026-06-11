@@ -61,7 +61,7 @@ BID_NOISE = re.compile(
 )
 
 LEADING_NOISE = re.compile(
-    r'^(\s*[▶○●◇□■·\-•▪]\s*|'
+    r'^(\s*[▶○●◇□■◐·\-•▪－–—]\s*|'
     r'\s*[ⅠⅡⅢⅣⅤⅥⅦⅧⅨⅩ]\s*\.?\s|'
     r'\s*[ㅇㅁ]\s+|'
     r'\s*\d+\s*[\.\)]\s*$|'

@@ -143,8 +143,36 @@ def extract_by_signature(path: Path, hwp_obj=None) -> tuple:
 
 
 def normalize_text(text: str) -> str:
-    """공통 후처리: 줄바꿈 정리, 연속 공백 압축."""
+    """공통 후처리.
+
+    수행 단계:
+    1. HTML 엔터티 디코딩 (&#9702; → ◇, &amp; → & 등)
+    2. 줄바꿈 정리
+    3. 전각/특수 글머리표 → 공백 (S5/S2 정확도 향상)
+    4. 양식·약어 풀이 잔재 컷
+    5. 연속 공백 압축
+    """
+    import html as html_lib
+    # 1. HTML 엔터티 디코딩
+    text = html_lib.unescape(text)
+    # 2. 줄바꿈 정리
     text = re.sub(r'\r\n?', '\n', text)
+    # 3. 전각/특수 글머리표 → 세미콜론 (sub-requirement 분리 + 노이즈 제거)
+    #    예: "관리방안을 제시 ◇ 보고체계를 정립 ◇ 일정 제출" → "...제시; 보고체계 정립; 일정 제출"
+    text = re.sub(r'\s*[◇□■○●▶▪◐▷◆＊]\s*', '; ', text)
+    #    전각 하이픈·대시 (단독 글머리표) → 세미콜론
+    text = re.sub(r'(^|\s)[－–—]\s+', r'\1; ', text)
+    #    인용·문장부호류 → 공백
+    text = re.sub(r'[「」『』※]', ' ', text)
+    #    세미콜론 정리 (연속 세미콜론, 시작 세미콜론)
+    text = re.sub(r'(;\s*){2,}', '; ', text)
+    text = re.sub(r'^\s*;\s*', '', text, flags=re.MULTILINE)
+    # 4. 양식·약어 풀이 잔재 컷
+    text = re.sub(r'\[양식\s*\d+\s*(?:참고|참조)?\]', '', text)
+    text = re.sub(r'\[별첨\s*\d+\]', '', text)
+    text = re.sub(r'\[붙임\s*\d+\]', '', text)
+    text = re.sub(r'\(M/M\)', '', text)
+    # 5. 공백 압축
     text = re.sub(r'[ \t]+', ' ', text)
     text = re.sub(r'\n{3,}', '\n\n', text)
     lines = [ln.strip() for ln in text.split('\n')]
