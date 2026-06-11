@@ -13,6 +13,57 @@
 
 ---
 
+## [2.0.0] — 2026-06-10 — KoFinRe-QA Framework 정렬
+
+### 변경 동기
+
+논문 초안 `Korean Public Financial RFP Quality Analysis Framework.pdf` 검토 후
+v1 의 구현 갭을 메우기 위한 메이저 리팩토링.
+
+### Added
+
+- **`FRAMEWORK_GAP_ANALYSIS.md`** — 논문 5 stages × 우리 구현 차이 분석, 우선순위 매트릭스 (P0~P4)
+- **`kofinre/` 패키지** — 논문 Stage 1~5 + Manual Validation 정렬 구조
+- **`kofinre/smell_taxonomy.yaml`** — 10종 smell 표준 정의 (Paska/IEEE 830/ISO 29148 매핑 포함)
+- **`kofinre/detectors/`** — 5 detector 골격
+  - `RegexDetector` — 정규식·키워드 (HIGH/MED/LOW confidence)
+  - `MorphDetector` — 형태소·종결어미·조사 (v2.1 KoNLPy 통합 예정)
+  - `ChunkDetector` — 주체-행위-대상 휴리스틱
+  - `DictionaryDetector` — 금융기관·도메인·약어 사전
+  - `LLMDetector` — 외부 LLM 호출 인터페이스 + 캐싱
+- **`kofinre/ensemble.py`** — majority / rule-priority / confidence-weighted voting
+- **`kofinre/metrics.py`** — 3 카테고리 지표
+  - Detection: Precision, Recall, F1, FPR, FNR, Cohen's Kappa, Macro-F1, Micro-F1
+  - Quality: Smell Density, Coverage, Severe Ratio, Yield, Validity Rate
+  - Correction: Smell Reduction, Quality Gain, Atomicity·Testability Improvement
+- **`kofinre/reporting.py`** — 논문 표준 리포트 6종
+  - extraction_report.md, smell_report.md, evaluation_report.md
+  - correction_report.md, dataset_card.md, run_log.json
+- **`kofinre/correction.py`** — Stage 5 LLM 교정 모듈 + 6원칙 프롬프트
+- **`kofinre/validation.py`** — Manual Validation 도구 (층화 표본 추출, Cohen's kappa, gold label 합의)
+- **`kofinre/pipeline.py`** — 5 stage orchestration entrypoint
+
+### Changed
+
+- **Smell taxonomy 7종 → 10종**
+  - 기존 "모호어" → S3 Ambiguous Term (어휘) + S8 Coordination Ambiguity (범위)로 분리
+  - S2 Incomplete Requirement 신규 — 시스템 응답·행위·대상 누락
+  - S10 Unverifiable Requirement 신규 — 검증 방법·판정 기준 부재
+- **산출물 디렉토리 표준화** (논문 명명)
+  - `sentences_all.csv` → `sentence_candidates.csv`
+  - `requirements_filtered.csv` → `requirement_candidates.csv`
+  - `stage1_extraction/`, `stage3_detection/`, `stage4_evaluation/`, `stage5_correction/`
+
+### Not yet (v2.1 예정)
+
+- KoNLPy/Mecab 통합 (MorphDetector 본격 구현)
+- 명사구 추출 강화 (ChunkDetector)
+- Anthropic/OpenAI 실 API 호출 어댑터 (LLMDetector, LLMCorrector)
+- Stage 5 자동 의미보존 평가 (현재는 평가자 검토 양식만)
+- 4 방식 baseline 자동 비교 (Rule/NLP/LLM/Ensemble)
+
+---
+
 ## [1.0.2] — 2026-06-10
 
 ### Added

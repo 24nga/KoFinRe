@@ -14,6 +14,8 @@
 변경 이력: [`UPDATE.MD`](./UPDATE.MD)
 원본 Paska 대비 변경: [`PASKA_KOREAN_ADAPTATION.md`](./PASKA_KOREAN_ADAPTATION.md)
 논문용 정리: [`PAPER_DRAFT.md`](./PAPER_DRAFT.md)
+**논문 vs 구현 갭 분석: [`FRAMEWORK_GAP_ANALYSIS.md`](./FRAMEWORK_GAP_ANALYSIS.md)**
+**v2 패키지: [`kofinre/`](./kofinre/) — 논문 5 stages 정렬 구조**
 
 ## 디렉토리
 
