@@ -13,6 +13,7 @@
 규칙 본문: [`EXTRACTION_RULES.md`](./EXTRACTION_RULES.md)
 변경 이력: [`UPDATE.MD`](./UPDATE.MD)
 원본 Paska 대비 변경: [`PASKA_KOREAN_ADAPTATION.md`](./PASKA_KOREAN_ADAPTATION.md)
+논문용 정리: [`PAPER_DRAFT.md`](./PAPER_DRAFT.md)
 
 ## 디렉토리
 

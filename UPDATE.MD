@@ -13,6 +13,18 @@
 
 ---
 
+## [1.0.2] — 2026-06-10
+
+### Added
+
+- **`PAPER_DRAFT.md`** — 논문 작성용 학술 정리본
+  - Abstract, Introduction, Related Work, Problem Analysis 섹션
+  - Methodology (5단계 파이프라인 상세)
+  - Implementation, Experimental Setup (D1·D2·D3 데이터셋 정의)
+  - Results — 영문 Paska vs 한국어 자체/정형 데이터 정량 비교
+  - Insights 8개 (한국어 RFP 특유 패턴, "실시간" 함정, AML 도메인 취약성 등)
+  - Limitations, Conclusion, Future Work, References, Appendix A~D
+
 ## [1.0.1] — 2026-06-10
 
 ### Added
