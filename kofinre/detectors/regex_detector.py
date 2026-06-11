@@ -50,6 +50,23 @@ WEAK_DUTY_END = re.compile(r'(한다|된다|함|됨)[\s\.]*$')
 # ───────────────── S5 Missing Actor ─────────────────
 SUBJECT_RE = re.compile(r'^[가-힣A-Za-z0-9\s\(\)\[\]\-_]+(가|이|은|는|에서|이며)\s')
 
+# 의무 표현 앞쪽 N 글자에 시스템 명사가 있으면 주체 있음으로 판정
+SYSTEM_ACTOR_NOUN = re.compile(
+    r'(?:^|[\s\(])'
+    r'(본\s*시스템|본\s*사업|본\s*모듈|본\s*서비스|시스템|모듈|서비스|애플리케이션|'
+    r'클라이언트|서버|사용자|관리자|운영자|개발자|이용자|고객|'
+    r'발주\s*기관|제안사|수행사|발주자|발주처|관리\s*화면|화면)'
+    r'[가-힣]*\s*(?:은|는|이|가|에서|이며|에서는)?'
+)
+
+# 동사 명사형 (의무 표현 직전에 와야 함). 더 단순·확장 패턴.
+ACTION_NOUN_BEFORE_DUTY = re.compile(
+    r'(개발|구축|운영|관리|처리|지원|제공|수행|반영|연계|적용|분석|점검|모니터링|'
+    r'배포|등록|수정|삭제|조회|저장|기록|표시|보고|보호|암호화|전송|수집|구성|설계|'
+    r'구현|작성|준수|보장|확보|보유|갖춤|제출|기술|제시|포함|마련|확인)'
+    r'\s*(?:하|되|이|있)여야'
+)
+
 # ───────────────── S6 Missing Quantification ─────────────────
 PERF_KEYS = re.compile(r'(성능|속도|처리량|응답시간|동시접속|건수|TPS|처리율|용량|대수|초당|분당|시간당|정확도|가용성)')
 NUMBER_RE = re.compile(r'\d+\s*(개|건|초|분|시간|일|년|GB|MB|TB|만|억|명|건/초|TPS|%|밀리초|ms)')
@@ -104,14 +121,18 @@ class RegexDetector(BaseDetector):
         res.set("S1", duty_count >= 2, Confidence.HIGH if duty_count >= 2 else 0.0,
                 f"의무표현 {duty_count}회")
 
-        # S2 Incomplete — 의무 표현은 있지만 대상(`~을/를`) 부재
+        # S2 Incomplete — 정밀화: 의무 표현 + 목적 조사 부재 + 동사 명사형도 부재
         has_duty = STRONG_DUTY_RE.search(s) is not None
-        has_object = re.search(r'(을|를)\s+[가-힣]+(?:해야|하여야|할\s*수)', s) is not None
-        # 조건절(~경우)만 있고 결과 부재 케이스도
-        only_condition = re.search(r'~경우|할\s*때|발생\s*시', s) is not None and not has_duty
-        incomplete = (has_duty and not has_object) or only_condition
+        # 부사·복합어 사이에 끼는 경우 허용
+        has_object = re.search(r'(을|를)\s+(?:[가-힣\s]+?)(?:해야|하여야|할\s*수\s*있어야)', s) is not None
+        has_action_noun = ACTION_NOUN_BEFORE_DUTY.search(s) is not None
+        # 조건절(~경우)만 있고 결과 부재 케이스
+        only_condition = re.search(r'\s*경우$|할\s*때\s*$|발생\s*시\s*$', s) is not None and not has_duty
+        # 의무 표현은 있는데 대상도, 동사 명사형도 없을 때만 검출
+        incomplete = (has_duty and not has_object and not has_action_noun) or only_condition
         res.set("S2", incomplete, Confidence.MEDIUM if incomplete else 0.0,
-                "대상 부재" if has_duty and not has_object else "조건만 있음" if only_condition else "")
+                "대상·행위 부재" if has_duty and not has_object and not has_action_noun
+                else "조건만" if only_condition else "")
 
         # S3 Ambiguous term — 어휘 모호
         vague_hits = [t for t in VAGUE_TERMS if t in s]
@@ -124,10 +145,20 @@ class RegexDetector(BaseDetector):
                 and PASSIVE_RE.search(s) is None)
         res.set("S4", weak, Confidence.HIGH if weak else 0.0, "평서형 종결")
 
-        # S5 Missing Actor — 주어 부재 + 의무 표현
-        missing_actor = (SUBJECT_RE.match(s) is None and STRONG_DUTY_RE.search(s) is not None)
+        # S5 Missing Actor — 정밀화: 의무 표현 직전 30자 내 시스템 명사 있으면 false
+        has_duty_match = STRONG_DUTY_RE.search(s)
+        if has_duty_match:
+            duty_start = has_duty_match.start()
+            preceding = s[:duty_start]
+            # 조사 포함 시스템 주체 후보 검사
+            has_system_actor = SYSTEM_ACTOR_NOUN.search(preceding) is not None
+            # 일반 명사구 주어 (SUBJECT_RE)
+            has_general_subject = SUBJECT_RE.match(s) is not None
+            missing_actor = not has_system_actor and not has_general_subject
+        else:
+            missing_actor = False
         res.set("S5", missing_actor, Confidence.MEDIUM if missing_actor else 0.0,
-                "주어 부재")
+                "주체 후보 부재")
 
         # S6 Missing Quantification — 성능 키워드 + 숫자 없음
         missing_quant = PERF_KEYS.search(s) is not None and NUMBER_RE.search(s) is None
