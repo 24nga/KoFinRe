@@ -13,6 +13,51 @@
 
 ---
 
+## [2.1.0] — 2026-06-10 — 폴더 구조 정리 + 패키지화
+
+### Added
+
+- **`pyproject.toml`** — 패키지 메타 (PEP 621), `pip install -e .` 지원
+- **`docs/`** — 모든 문서 한 곳으로 (UPDATE/EXTRACTION_RULES/FRAMEWORK_GAP_ANALYSIS/PASKA_KOREAN_ADAPTATION/PAPER_DRAFT)
+- **`legacy/`** — v1 스크립트 보관 + 마이그레이션 가이드 (`legacy/README.md`)
+- **`kofinre/extraction/`** — Stage 1 모듈 분리
+  - `signatures.py` — 파일 시그니처 판별 (FileKind enum)
+  - `document_extractor.py` — HTML/HWP/PDF/DOCX/RTF + 시그니처 자동 분기
+  - `sentence_splitter.py` — 한국어·세미콜론 분리 + 1차 품질 필터
+  - `requirement_filter.py` — 정밀 필터 + FilterReason enum (exclusion_reason.csv 추적)
+- **`kofinre/io/`** — 입출력 도구
+  - `csv_loader.py` — REQ_abstract 로더, sub-req 분리
+  - `excel_writer.py` — 다중 시트 리포트 (조건부 색상, 자동 필터)
+- **`scripts/`** — CLI entrypoint
+  - `run_extraction.py` — Stage 1
+  - `run_detection.py` — Stage 2-3 (5 detector + 앙상블)
+- **`examples/`**
+  - `basic_usage.py` — 5문장 데모
+  - `req_abstract_demo.py` — REQ_abstract.csv 평가
+- **`tests/`** — 단위 테스트 (test_detectors / test_metrics)
+- DOCX 추출 지원 (`python-docx`)
+- RTF 처리 `striprtf` 일원화 (unrtf 미설치 환경 대응)
+
+### Changed
+
+- 루트 정리 — 9개 v1 스크립트 → `legacy/`
+- 문서 5개 → `docs/`
+- `requirements.txt` 최소 의존성, 선택 의존성은 `pyproject.toml` extras (hwp/docx/nlp/all/dev)
+- `.gitignore` 강화 — `data/`, `results/`, LLM 캐시, 빌드 산출물
+
+### Migration (v2.0 → v2.1)
+
+| 변경 전 (루트) | 변경 후 |
+|---|---|
+| `rfp_extract.py` | `kofinre/extraction/document_extractor.py` + `scripts/run_extraction.py` |
+| `rfp_smell.py` | `kofinre/detectors/regex_detector.py` |
+| `rfp_requirement_filter.py` | `kofinre/extraction/requirement_filter.py` |
+| `rfp_excel*.py` | `kofinre/io/excel_writer.py` |
+| `req_abstract_eval.py` | `examples/req_abstract_demo.py` |
+| `EXTRACTION_RULES.md` 등 | `docs/EXTRACTION_RULES.md` 등 |
+
+---
+
 ## [2.0.0] — 2026-06-10 — KoFinRe-QA Framework 정렬
 
 ### 변경 동기

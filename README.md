@@ -1,116 +1,212 @@
-# 한국어 RFP 요구사항 추출·평가 도구
+# KoFinRe — Korean Public Financial RFP Quality Analyzer
 
-공공금융기관 RFP 공고문에서 한국어 요구사항을 자동 추출하고 품질(Smell)을 평가합니다.
-원본 [Paska](https://github.com/lu-cs-sv/Paska) (영문 전용)의 한국어 RFP 대응판.
+> **K**orean **Fin**ancial **Re**quirements — 한국어 공공금융 RFP 요구사항 품질 자동 평가 프레임워크
+>
+> 논문 [`KoFinRe-QA Framework`](./docs/PAPER_DRAFT.md) 기반 / Paska smell taxonomy + IEEE 830 / ISO 29148 참조
+
+[![version](https://img.shields.io/badge/version-2.1.0-blue)](./docs/UPDATE.MD)
+[![python](https://img.shields.io/badge/python-3.10+-blue)](pyproject.toml)
+[![license](https://img.shields.io/badge/license-MIT-green)](#license)
+
+---
 
 ## 무엇을 하나
 
-1. **추출 (Extract)** — 공고 HTML / HWP / PDF / RTF에서 텍스트 뽑기
-2. **필터 (Filter)** — 한국어 요구사항만 골라내기 (규칙 기반)
-3. **검사 (Smell)** — 7가지 품질 문제 패턴 매칭
-4. **리포트 (Report)** — CSV / Markdown / Excel 출력
+| 단계 | 입력 | 출력 |
+|---|---|---|
+| **Stage 1** 추출 | RFP 공고 (HTML/HWP/PDF/DOCX/RTF) | 문장 후보 + 요구사항 후보 CSV |
+| **Stage 2** 정의 | — | 10종 한국어 smell taxonomy |
+| **Stage 3** 탐지 | 요구사항 후보 | 5 detector + 앙상블 라벨 |
+| **Stage 4** 평가 | 라벨 + (선택) gold label | Precision/Recall/F1/Kappa + 리포트 6종 |
+| **Stage 5** 교정 | smell 검출 요구사항 | LLM 6원칙 교정 + 재평가 |
 
-규칙 본문: [`EXTRACTION_RULES.md`](./EXTRACTION_RULES.md)
-변경 이력: [`UPDATE.MD`](./UPDATE.MD)
-원본 Paska 대비 변경: [`PASKA_KOREAN_ADAPTATION.md`](./PASKA_KOREAN_ADAPTATION.md)
-논문용 정리: [`PAPER_DRAFT.md`](./PAPER_DRAFT.md)
-**논문 vs 구현 갭 분석: [`FRAMEWORK_GAP_ANALYSIS.md`](./FRAMEWORK_GAP_ANALYSIS.md)**
-**v2 패키지: [`kofinre/`](./kofinre/) — 논문 5 stages 정렬 구조**
+---
 
-## 디렉토리
+## 디렉토리 구조 (v2.1)
 
 ```
-.
-├── README.md                       # 이 파일
-├── EXTRACTION_RULES.md             # 추출·평가 규칙 정의
-├── UPDATE.MD                       # 변경 이력
-├── requirements.txt                # Python 의존성
-├── rfp_extract.py                  # 1) HTML/HWP/PDF/RTF 텍스트 추출
-├── rfp_smell.py                    # 2) Smell 7종 검사
-├── rfp_requirement_filter.py       # 3) 요구사항만 정밀 필터링
-├── rfp_excel.py                    # 4) Excel 리포트 (전체 결과)
-├── rfp_excel_sentences.py          #    Excel — 분석 문장 원문
-├── rfp_excel_requirements.py       #    Excel — 정밀 필터 요구사항
-├── req_abstract_eval.py            # 5) REQ_abstract.csv (정형 CSV) 평가
-├── req_abstract_excel.py           #    Excel — 정형 CSV 결과
-└── download_rfp.py                 # 0) RFP 56건 자동 다운로드 (사전 단계)
+KoFinRe/
+├── README.md                     ← 이 파일
+├── pyproject.toml                ← 패키지 메타·의존성
+├── requirements.txt              ← 최소 의존성
+│
+├── docs/                         ← 모든 문서 한 곳에
+│   ├── UPDATE.MD                 ← 변경 이력 (Keep a Changelog)
+│   ├── EXTRACTION_RULES.md       ← 추출·필터 규칙
+│   ├── FRAMEWORK_GAP_ANALYSIS.md ← 논문 vs 구현 갭
+│   ├── PASKA_KOREAN_ADAPTATION.md← Paska 원본 대비 변경
+│   └── PAPER_DRAFT.md            ← 학술용 정리본
+│
+├── kofinre/                      ← 핵심 패키지
+│   ├── __init__.py
+│   ├── smell_taxonomy.yaml       ← 10종 smell 정식 정의
+│   ├── detectors/
+│   │   ├── base.py               ← BaseDetector / DetectorResult / Confidence
+│   │   ├── regex_detector.py     ← S1~S10 전체 정규식
+│   │   ├── morph_detector.py     ← 형태소·종결어미·조사
+│   │   ├── chunk_detector.py     ← 주체-행위-대상 휴리스틱
+│   │   ├── dictionary_detector.py← 금융·도메인 사전
+│   │   └── llm_detector.py       ← LLM 보조 판정 + 캐싱
+│   ├── extraction/               ← Stage 1
+│   │   ├── signatures.py         ← 파일 시그니처 판별
+│   │   ├── document_extractor.py ← 다포맷 추출기
+│   │   ├── sentence_splitter.py  ← 문장 분리
+│   │   └── requirement_filter.py ← 정밀 필터 + 컷 사유 추적
+│   ├── io/                       ← CSV / Excel 입출력
+│   │   ├── csv_loader.py
+│   │   └── excel_writer.py
+│   ├── ensemble.py               ← rule-priority / majority / weighted voting
+│   ├── metrics.py                ← Detection / Quality / Correction 지표
+│   ├── reporting.py              ← 6 표준 리포트 (md + json)
+│   ├── correction.py             ← Stage 5 LLM 교정 6원칙
+│   ├── validation.py             ← Manual Validation + Cohen's kappa
+│   └── pipeline.py               ← 5-stage orchestration
+│
+├── scripts/                      ← CLI entrypoint
+│   ├── run_extraction.py         ← Stage 1
+│   └── run_detection.py          ← Stage 2-3
+│
+├── examples/                     ← 사용 예제
+│   ├── basic_usage.py            ← 5문장 데모
+│   └── req_abstract_demo.py      ← REQ_abstract.csv 평가
+│
+├── tests/                        ← 단위 테스트
+│   ├── test_detectors.py
+│   └── test_metrics.py
+│
+├── data/                         ← 입력 (gitignore — 직접 추가)
+├── results/                      ← 산출물 (gitignore)
+│
+└── legacy/                       ← v1 스크립트 보관 (마이그레이션 참고용)
 ```
+
+---
 
 ## 빠른 시작
 
-### 사전 요구사항
-
-- Windows + Python 3.10 이상
-- (HWP 처리용) 한컴오피스 2024 설치 — `win32com` COM 자동화 사용
-- 의존성:
-  ```powershell
-  pip install -r requirements.txt
-  ```
-
-### 비정형 RFP 공고문에서 추출
+### 설치
 
 ```powershell
-# 0) RFP 56건 다운로드 (선택 — 새 자료셋이면)
-python download_rfp.py
+# 필수
+pip install -r requirements.txt
 
-# 1) 텍스트 추출 — HTML/HWP/PDF/RTF 모두 처리
-python rfp_extract.py
-#  → rfp_extract/<NN>_<기관>_<사업>.txt (56개)
+# HWP 처리 (Windows + 한컴오피스 필요)
+pip install pywin32
 
-# 2) Smell 1차 (모든 문장에 적용)
-python rfp_smell.py
-#  → rfp_report/sentences_all.csv (분석된 모든 문장)
-#  → rfp_report/smell.csv (검출 문장만)
-#  → rfp_report/summary.json
-
-# 3) 진짜 요구사항만 정밀 필터
-python rfp_requirement_filter.py
-#  → rfp_report/requirements_filtered.csv
-#  → rfp_report/requirements_per_project.csv
-#  → rfp_report/requirements_per_project_text/<사업>.md
-
-# 4) Excel 리포트
-python rfp_excel.py                # 56건 종합
-python rfp_excel_sentences.py      # 분석 문장 원문 자동필터
-python rfp_excel_requirements.py   # 정밀 필터 요구사항
+# DOCX 처리
+pip install python-docx
 ```
 
-### 정형 CSV(REQ_abstract.csv 형식) 평가
+### 가장 빠른 데모 — 5문장 평가
 
 ```powershell
-python req_abstract_eval.py
-#  → rfp_report/req_abstract_eval.csv (req_id 단위)
-#  → rfp_report/req_abstract_eval_sub.csv (sub-req 단위)
-
-python req_abstract_excel.py
-#  → rfp_report/REQ_abstract_평가결과.xlsx (5시트)
+python examples/basic_usage.py
 ```
 
-## Smell 7종
+출력 예:
+```
+1   본 시스템은 사용자 인증, 권한관리 등을 실시간으로 지원해야 한다.   S3(모호어), S5(주체누락), S8(범위모호)
+2   보고서는 자동으로 생성되어야 한다.                                S5(주체누락), S9(수동표현)
+3   이력 정보를 저장한다.                                              S4(약한의무)
+4   신용점수 조회는 NICE/KCB를 통해 수행하여야 하며, 응답시간은 200ms…  (없음)
+5   시스템은 효율적으로 운영되어야 한다.                              S3(모호어), S10(검증불가)
+```
 
-| 코드 | 의미 | 예시 |
-|---|---|---|
-| 모호어 | 정량성 결여 | "**적절한** 응답시간을 보장한다" |
-| 수동태 | 행위 주체 흐릿 | "보고서는 **생성되어야** 한다" |
-| 복합의무 | 한 문장 다중 요구 | "A를 처리**해야 하고** B를 전송**해야** 한다" |
-| 정량부재 | 성능 키워드인데 숫자 없음 | "**빠른 응답속도**를 보장한다" |
-| 미정의약어 | 정의 없이 등장 | "**AML/CFT** 처리를 위해…" |
-| 주체모호 | 주어 없이 의무문 | "매월 정기적으로 보고**한다**" |
-| 약한의무 | "한다/된다" 평서형 | "이력 정보를 저장**한다**" |
+### 정형 CSV (REQ_abstract.csv 형식) 평가
 
-## 검증 결과 (v1.0)
+```powershell
+python examples/req_abstract_demo.py \
+    --input "C:/Users/heen1/Downloads/REQ_abstract.csv" \
+    --output results/req_abstract_demo/
+```
+
+### 비정형 RFP 공고 → 평가
+
+```powershell
+# Stage 1
+python scripts/run_extraction.py \
+    --input data/raw_documents/ \
+    --output results/stage1_extraction/
+
+# Stage 2-3
+python scripts/run_detection.py \
+    --input results/stage1_extraction/requirement_candidates.csv \
+    --output results/stage3_detection/
+```
+
+### 단위 테스트
+
+```powershell
+python -m unittest discover tests
+```
+
+---
+
+## Smell Taxonomy (10종)
+
+| Code | 한국어 | Quality Attribute | 예시 |
+|---|---|---|---|
+| S1 | 복합의무 | Atomicity | 한 문장에 둘 이상 기능 |
+| S2 | 불완전 | Completeness | 응답·행위·대상 누락 |
+| S3 | 모호어 | Unambiguity | "적절히, 필요한, 실시간" |
+| S4 | 약한의무 | Verifiability | "~한다 / ~된다" |
+| S5 | 주체누락 | Completeness | 수행 주체 미명시 |
+| S6 | 정량부재 | Testability | 성능 키워드 + 숫자 없음 |
+| S7 | 미정의약어 | Traceability | 정의 없이 등장하는 약어 |
+| S8 | 범위모호 | Unambiguity | "및/또는, 등, 포함, 관련" |
+| S9 | 수동표현 | Clarity | "~되어야 한다" |
+| S10 | 검증불가 | Verifiability | "효율적으로" + 측정 기준 부재 |
+
+상세: [`kofinre/smell_taxonomy.yaml`](./kofinre/smell_taxonomy.yaml)
+
+---
+
+## 검증 결과 (v1 데이터셋)
 
 | 데이터셋 | 입력 | 추출 | Smell 비율 |
 |---|---|---|---|
-| RFP 56건 자체 추출 | 3,210 문장 | 75건 | 65.3% |
+| RFP 56건 (자체 추출) | 3,210 문장 | 75건 | 65.3% |
 | REQ_abstract 30건 (정형) | 30 req / 140 sub | 30건 | 56.7% |
+| PURE 영문 79건 (Paska 기준선) | 1,200 reqs | — | 46.6% |
 
-## 라이선스
+v2.x 에서 4 방식 baseline (Rule/NLP/LLM/Ensemble) 비교 자동화 예정.
 
-MIT (단, 한컴오피스 COM 자동화는 한컴 라이선스 약관 준수 필요)
+---
 
-## 참고
+## 로드맵
 
-- 원본 영문 도구: [Paska](https://github.com/lu-cs-sv/Paska)
-- Stanford POS Tagger: <https://nlp.stanford.edu/software/tagger.shtml>
-- 한국어 NLP 참고: [한국어 RFP 품질 평가에 대한 일반 논문](https://www.kci.go.kr) (예시 링크)
+| 버전 | 상태 | 주요 변경 |
+|---|---|---|
+| v1.0 | ✓ | 7-smell, 단일 detector |
+| v2.0 | ✓ | 10-smell, 5-detector 골격, 6 리포트, 논문 정렬 |
+| **v2.1** | **현재** | 폴더 구조 정리, 패키지화, CLI, 단위 테스트 |
+| v2.2 | 예정 | KoNLPy 통합, LLM 실 API 어댑터 |
+| v2.3 | 예정 | 200건 gold label, baseline 비교 자동화 |
+
+---
+
+## 문서 트리
+
+- 사용법: 이 파일
+- 추출 규칙 상세: [`docs/EXTRACTION_RULES.md`](./docs/EXTRACTION_RULES.md)
+- 변경 이력: [`docs/UPDATE.MD`](./docs/UPDATE.MD)
+- 논문 vs 구현 갭: [`docs/FRAMEWORK_GAP_ANALYSIS.md`](./docs/FRAMEWORK_GAP_ANALYSIS.md)
+- Paska 대비 변경: [`docs/PASKA_KOREAN_ADAPTATION.md`](./docs/PASKA_KOREAN_ADAPTATION.md)
+- 논문용 정리: [`docs/PAPER_DRAFT.md`](./docs/PAPER_DRAFT.md)
+- v1 스크립트 보관: [`legacy/`](./legacy/)
+
+## License
+
+MIT (한컴오피스 COM 자동화는 한컴 라이선스 약관 준수 필요)
+
+## 인용
+
+본 프레임워크 사용 시 KoFinRe-QA Framework 논문 인용:
+
+```bibtex
+@article{kofinre2026,
+  title={A Framework for Quality Analysis and Dataset Construction of Korean Public Financial RFP Requirements},
+  author={...},
+  year={2026},
+}
+```

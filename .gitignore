@@ -1,50 +1,54 @@
-# 추출 결과(대용량)
-rfp_extract/
-rfp_report/sentences_all.csv
-rfp_report/smell.csv
-rfp_report/per_project_text/
-rfp_report/requirements_per_project_text/
+# ─── v2 산출물·입력 (기본 비공개) ───
+data/
+results/
+**/raw_documents/
+**/extracted_text/
 
-# 임시·캐시
+# ─── 캐시·임시 ───
 __pycache__/
 *.pyc
 *.pyo
 .pytest_cache/
 .mypy_cache/
 .coverage
+.ruff_cache/
+*.egg-info/
+build/
+dist/
 
-# 환경
+# ─── 가상환경 ───
 .venv/
 venv/
 env/
 
-# IDE
+# ─── IDE / OS ───
 .idea/
 .vscode/
 *.swp
-
-# OS
 Thumbs.db
 .DS_Store
 desktop.ini
 
-# 임시 점검 스크립트
+# ─── 임시 점검 스크립트 (개발 흔적) ───
 peek*.py
+debug_*.py
+scratch_*.py
 
-# 이 폴더에 섞여 있는 무관한 작업물
+# ─── 한컴/Office 작업 흔적 ───
+~$*
+~$*.hwp
+
+# ─── 외부 무관 작업 ───
 .mcp.json
 package.json
 package-lock.json
 node_modules/
 *.skill
 
-# 작업 중 생성된 보조 데이터
-*.tmp
-*.bak
-~$*
+# ─── LLM 캐시 ───
+.llm_cache/
+*_llm_cache.json
 
-# 큰 결과물 (필요하면 Releases로)
+# ─── 큰 결과물 (Releases로 배포) ───
 *.zip
-
-# 한컴 작업 흔적
-~$*.hwp
+*.tar.gz

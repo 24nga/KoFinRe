@@ -1,0 +1,48 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "kofinre"
+version = "2.1.0"
+description = "Korean Public Financial RFP Quality Analysis Framework"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+authors = [{ name = "24nga" }]
+keywords = ["requirements-engineering", "korean-nlp", "rfp", "smell-detection", "public-financial"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: Korean",
+    "Programming Language :: Python :: 3.10",
+    "Topic :: Software Development :: Quality Assurance",
+]
+dependencies = [
+    "beautifulsoup4>=4.12",
+    "pdfplumber>=0.11",
+    "openpyxl>=3.1",
+    "requests>=2.32",
+    "striprtf>=0.0.26",
+]
+
+[project.optional-dependencies]
+hwp = ["pywin32>=306; sys_platform == 'win32'"]
+docx = ["python-docx>=1.1"]
+nlp = ["konlpy>=0.6"]
+all = ["pywin32>=306; sys_platform == 'win32'", "python-docx>=1.1", "konlpy>=0.6"]
+dev = ["pytest>=8", "ruff>=0.5"]
+
+[project.urls]
+Repository = "https://github.com/24nga/KoFinRe"
+Documentation = "https://github.com/24nga/KoFinRe/tree/main/docs"
+Changelog = "https://github.com/24nga/KoFinRe/blob/main/docs/UPDATE.MD"
+
+[project.scripts]
+kofinre-extract = "scripts.run_extraction:main"
+kofinre-detect = "scripts.run_detection:main"
+
+[tool.setuptools.packages.find]
+include = ["kofinre*"]
+exclude = ["legacy*", "tests*", "examples*", "scripts*", "data*", "results*"]
