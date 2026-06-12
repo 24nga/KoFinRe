@@ -28,9 +28,23 @@ class ChunkDetector(BaseDetector):
         s = sentence
         res = DetectorResult(sentence=s)
 
+        # Fix #1 (v2.2): short bullet (30자 미만)은 actor/target 검사 자체 스킵.
+        # 양식 양상 "기능명" 키워드만 있는 fragment에서 자연스레 actor/target 부재 →
+        # false positive 다수 발생. 의미 있는 의무 문장만 평가.
+        if len(s.strip()) < 30:
+            for c in ["S1","S2","S3","S4","S5","S6","S7","S8","S9","S10"]:
+                res.set(c, False)
+            res.meta = {"skip_reason": "short_bullet"}
+            return res
+
         actor = ACTOR_CANDIDATES.search(s)
         action = ACTION_VERBS.search(s)
         target = TARGET_NOUN.search(s)
+
+        # Fix #2 (v2.2): 목적 조사(`을/를`)가 본문 어느 곳에든 있으면 target 있음으로 인정.
+        # TARGET_NOUN 정규식이 "X를 + 동사" 인접만 잡아서 부사·수식어가 끼면 놓치는 케이스 보완.
+        if not target and __import__('re').search(r'(을|를)\s', s):
+            target = True  # marker (실제 매칭 객체 아니어도 truthy)
 
         # S2 Incomplete — 주체/행위/대상 중 하나라도 부재
         missing = []
@@ -58,6 +72,7 @@ class ChunkDetector(BaseDetector):
         res.meta = {
             "actor": actor.group() if actor else None,
             "action": action.group() if action else None,
-            "target": target.group(1) if target else None,
+            "target": (target.group(1) if hasattr(target, 'group') else 'particle-match')
+                if target else None,
         }
         return res

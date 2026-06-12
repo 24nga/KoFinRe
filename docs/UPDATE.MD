@@ -13,6 +13,42 @@
 
 ---
 
+## [2.2.0] — 2026-06-12 — ChunkDetector 정밀화 (D4 정성 검토 기반)
+
+### 동기
+
+D4 (실기업 4모듈) 정성 검토에서 다음 정량 발견:
+- S5 검출 209건 중 24% (50건)이 30자 미만 short fragment (양식 키워드)
+- S2 검출 235건 중 69% (161건)에 목적 조사(`을/를`)가 본문에 존재
+- D4 양식이 "요구사항명 | 요구사항 내용" 결합형 — ChunkDetector 가 양쪽 합쳐 평가
+
+### Changed
+
+- **Fix #1 — `kofinre/detectors/chunk_detector.py`**: 30자 미만 short fragment 는 actor/target 검사 자체 스킵
+- **Fix #2 — `kofinre/detectors/chunk_detector.py`**: 목적 조사(`을|를`)가 본문 어디에든 있으면 target 있음으로 인정 (TARGET_NOUN 인접 매칭 한계 보완)
+- **Fix #3 — `kofinre/extraction/sentence_splitter.py`**: 양식 파이프(`|`) 분리자 추가 — SI 정의서 결합 양식 대응
+
+### 효과 (D4 257건 재실행)
+
+| 지표 | v2.1.1 | v2.2 | Δ |
+|---|---:|---:|---:|
+| Smell 비율 | 93.4% | 77.0% | **-16.4 ppt** |
+| S2 불완전 | 235 | 181 | -54 (-23%) |
+| S5 주체누락 | 209 | 159 | -50 (-24%) |
+| CM 공통 모듈 | 84.9% | 45.3% | -40 ppt ⭐ |
+| BG 예산 모듈 | 96.2% | 69.2% | -27 ppt |
+
+FA 회계의 약한의무(S4) 44건, CI 신용정보의 미정의약어(S7) 19건은 그대로 유지 — 정당한 검출 확인.
+
+### Added
+
+- D4 정성 검토 도구 (로컬 only):
+  - `assist/d4_gold_sample.py` — 197 stratified sample + R1/R2 양식
+  - `assist/d4_deep_fp_analysis.py` — 패턴 정량 분석
+- 자동 식별된 likely FP 후보 분석 리포트 (`real_reqs_anonymized/gold/D4_deep_fp_analysis.md`)
+
+---
+
 ## [2.1.1] — 2026-06-12 — D4 실기업 사례 검증 + 개선 권고
 
 ### 데이터셋 추가

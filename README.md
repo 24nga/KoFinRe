@@ -190,8 +190,9 @@ v2.x 에서 4 방식 baseline (Rule/NLP/LLM/Ensemble) 비교 자동화 예정.
 | v1.0 | ✓ | 7-smell, 단일 detector |
 | v2.0 | ✓ | 10-smell, 5-detector 골격, 6 리포트, 논문 정렬 |
 | v2.1 | ✓ | 폴더 구조 정리, 패키지화, CLI, 단위 테스트 |
-| **v2.1.1** | **현재** | D4 실기업 검증, 익명화 모듈, 개선 권고문 |
-| v2.2 | 예정 | KoNLPy 통합, LLM 실 API 어댑터, ChunkDetector 짧은 bullet 처리 |
+| v2.1.1 | ✓ | D4 실기업 검증, 익명화 모듈, 개선 권고문 |
+| **v2.2** | **현재** | ChunkDetector 정밀화 (short bullet/목적조사/양식 파이프) — D4 -16ppt |
+| v2.3 | 예정 | KoNLPy 통합, LLM 실 API 어댑터 |
 | v2.3 | 예정 | 200건 gold label, baseline 비교 자동화 |
 
 ---

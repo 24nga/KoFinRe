@@ -18,15 +18,19 @@ NOISE_RE = re.compile(
 
 
 def split_sentences(text: str) -> List[str]:
-    """한국어 + 영문 + 세미콜론 기준 분리."""
+    """한국어 + 영문 + 세미콜론 + 양식 파이프(|) 기준 분리.
+
+    Fix #3 (v2.2): "요구사항명 | 요구사항 내용" 양식 결합 패턴에서
+    `|` 양쪽을 독립 sub-requirement로 분리. SI 정의서 표준 양식 대응.
+    """
     text = re.sub(r'-\s*\n\s*', '', text)              # 하이픈 줄바꿈 결합
     text = re.sub(r'\s+', ' ', text)
     # 마침표·물음표·느낌표 + 한국어 종결
     parts = re.split(r'(?<=[\.!?。])\s+(?=[가-힣A-Z○●▶■◇\(\d])', text)
-    # 세미콜론 분리 (REQ_abstract sub-req 패턴)
+    # 세미콜론 + 양식 파이프 분리
     out = []
     for p in parts:
-        for sub in re.split(r'[;；]', p):
+        for sub in re.split(r'[;；]|\s+\|\s+', p):
             sub = sub.strip()
             if sub:
                 out.append(sub)
