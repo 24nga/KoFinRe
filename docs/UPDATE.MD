@@ -13,6 +13,52 @@
 
 ---
 
+## [2.1.1] — 2026-06-12 — D4 실기업 사례 검증 + 개선 권고
+
+### 데이터셋 추가
+
+- **D4 — 실기업 4 모듈 정의서 257건 (익명화)**
+  - 한 국내 캐피탈사 차세대 시스템 (2020) FA·BG·CI·CM 4모듈
+  - 정규식 익명화 후에만 평가 (회사·인명·연락처·외부사 마스킹)
+  - 결과는 **로컬 전용** (`real_reqs_anonymized_LOCAL_ONLY.zip`)
+  - 본 리포지토리/논문 인용 시 통계와 익명 짧은 패턴만
+
+### Added
+
+- **`docs/IMPROVEMENT_RECOMMENDATIONS.md`** — 3계층 개선 권고
+  - 작성자 가이드 (Smell 10종별 ❌ → ✅ 변환 예시)
+  - 모듈별 권고 (FA/BG/CI/CM)
+  - 도구(KoFinRe) v2.2/v2.3/v2.4 로드맵 (P0~P4 우선순위)
+  - 프로세스·정책 (검토 프로세스, 데이터 거버넌스, 도구 운영)
+- `docs/PAPER_DRAFT.md`:
+  - 6.1.4 D4 데이터셋 정의 (익명화 절차)
+  - 7.6 D4 Smell 검출 결과 (모듈·유형별 통계)
+  - 7.7 4 데이터셋 통합 비교표 (D1·D2·D3·D4)
+  - 8.5b 한국 SI 작성 관행 발견 (RQ4 결정적 답)
+  - 8.5c 윤리·법적 처리 절차 명문화
+- 통합 백업 (외부): `C:\Users\heen1\Desktop\KoFinRe_backup_20260612_*`
+  - rfp-extractor.zip, RFP_자료_56건.zip, Paska_Docker.zip
+  - assist_scripts_and_results.zip
+  - **real_reqs_anonymized_LOCAL_ONLY.zip** (외부 공유 금지)
+
+### 주요 발견
+
+- D4 Smell 비율 93.4% — 잘 정비된 산출물도 한국 SI 작성 관행(S2/S5)에서 자유롭지 않음
+- 모듈별 차별화:
+  - FA(회계): 약한의무 44건
+  - CI(신용정보): 미정의 약어 19건
+  - CM(공통): 84.9%로 가장 깨끗 (참조 모범)
+- D4의 **복합의무 0건** — 실기업 정의서는 sub-req 분리 우수 (Atomicity 양호)
+- **결정적 RQ4 답**: 한국 RFP 품질 이슈는 정제 수준이 아니라 **언어·문화적 작성 관행** 그 자체
+
+### 보안 처리
+
+- 익명화 모듈 (`anonymizer.py`) 작성 — 정규식 마스킹 8종
+- GitHub commit 시 D4 원문·식별자 0건 검증
+- `.gitignore` 강화 (`data/`, `results/`, LLM 캐시)
+
+---
+
 ## [2.1.0] — 2026-06-10 — 폴더 구조 정리 + 패키지화
 
 ### Added
