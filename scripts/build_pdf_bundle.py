@@ -8,6 +8,7 @@ from pathlib import Path
 
 
 DOCS_ORDER = [
+    'JOURNEY.md',
     'PAPER_DRAFT.md',
     'FRAMEWORK_GAP_ANALYSIS.md',
     'EXTRACTION_RULES.md',

@@ -20,6 +20,8 @@
 | **Stage 4** 평가 | 라벨 + (선택) gold label | Precision/Recall/F1/Kappa + 리포트 6종 |
 | **Stage 5** 교정 | smell 검출 요구사항 | LLM 6원칙 교정 + 재평가 |
 
+> **전체 프로젝트 여정 (v1.0 → v2.5)**: [`docs/JOURNEY.md`](./docs/JOURNEY.md) ⭐
+
 ---
 
 ## 디렉토리 구조 (v2.1)
