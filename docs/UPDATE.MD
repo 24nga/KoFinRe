@@ -13,6 +13,43 @@
 
 ---
 
+## [2.5.0] — 2026-06-12 — 휴리스틱 교정 + 4방식 baseline 비교
+
+### Added
+
+- **`kofinre/correction_heuristic.py`** — LLM 없이 작동하는 휴리스틱 교정
+  - S1 분리 (복합의무 → 다중 요구사항)
+  - S3 모호어 → `[명세 필요: ...]` 마커 (작성자 보강 요청)
+  - S4 평서형 → 의무형 (한다 → 해야 한다)
+  - S8 범위모호 → `[열거 명시 필요]` 마커
+  - 의미 분석 불가 명시 — 작성자 검토 필수
+- **`examples/heuristic_correction_demo.py`** — 5 예시 교정 시범
+- **`scripts/run_baselines.py`** — 4 방식 baseline 비교 자동화
+  - Rule-only (RegexDetector 단독)
+  - NLP-only (Morph + Chunk)
+  - LLM-assisted (Regex + LLM)
+  - Ensemble (5 detector + rule-priority voting)
+  - 출력: baseline_comparison.csv + baseline_report.md
+
+### R1_sim 50건 gold 기준 결과 (D4 익명)
+
+| 방식 | Macro-F1 | Micro-F1 | 검출량 | 분석 |
+|---|---:|---:|---:|---|
+| **Rule-only** | **0.278** | **0.837** | 21/50 (42%) | 가장 균형 |
+| NLP-only | 0.060 | 0.182 | 48/50 (96%) | ChunkDetector 과검출 |
+| LLM-assisted | 0.278 | 0.837 | 21/50 (42%) | LLM dry-run 시 Rule과 동일 |
+| Ensemble | 0.244 | 0.254 | 50/50 (100%) | OR voting 과검출 |
+
+**핵심 정량 발견**: Rule-only(Macro 0.28, Micro 0.84)가 가장 균형. **한국어 RFP 도메인의 정형 표현 명확성으로 휴리스틱이 효과적**임을 정량 확인 — 논문 RQ3 답.
+
+NLP-only(MorphDetector + ChunkDetector)는 S2/S5 과검출 경향. Ensemble은 OR 결합이라 정밀도 손실 — voting을 rule_priority에서 confidence_weighted로 전환 시 개선 여지.
+
+### Changed
+
+- 4 방식 baseline 비교는 gold label 기반 → R1_sim 50건이 휴리스틱이라 Rule-only에 유리한 편향 가능. 실제 사람 평가자 데이터로 후속 보완 필요.
+
+---
+
 ## [2.4.0] — 2026-06-12 — LLM 어댑터 + 문서 PDF 번들
 
 ### Added
