@@ -13,6 +13,42 @@
 
 ---
 
+## [2.4.0] — 2026-06-12 — LLM 어댑터 + 문서 PDF 번들
+
+### Added
+
+- **`kofinre/llm_adapters/`** — LLM API 어댑터 패키지
+  - `anthropic_caller.py` — Anthropic Claude 호출 (claude-opus-4-7 기본)
+  - 환경변수 `ANTHROPIC_API_KEY` 기반 자동 인증
+  - API 키 부재 시 자동 dry-run 모드 (CI·개발 환경 호환)
+  - `make_caller()` 팩토리 — 향후 OpenAI/로컬 모델 확장 대비
+- **`examples/llm_correction_demo.py`** — Stage 5 교정 데모 (3 예시 문장)
+- **`scripts/build_pdf_bundle.py`** — docs/ 전체 PDF 번들 빌드
+  - 6개 문서 통합 (PAPER_DRAFT → FRAMEWORK_GAP_ANALYSIS → EXTRACTION_RULES → PASKA_KOREAN_ADAPTATION → IMPROVEMENT_RECOMMENDATIONS → UPDATE)
+  - 표지 + 목차 자동 생성
+  - 산출물: `dist/KoFinRe_v2.3_documents.pdf` (2.7 MB)
+
+### R1 시뮬 평가 결과 (D4 50건)
+
+자체 휴리스틱 기반 시뮬 평가로 모델 vs 기준 비교:
+
+| Smell | Precision | Recall | F1 | 비고 |
+|---|---:|---:|---:|---|
+| S7 미정의약어 | 0.60 | 0.60 | **0.60** | 가장 균형 |
+| S3 모호어 | 0.50 | 1.00 | 0.67 | recall 우수 |
+| S4 약한의무 | 0.50 | 1.00 | 0.67 | FP 14건 |
+| S8 범위모호 | 0.50 | 1.00 | 0.67 | |
+| S2/S5 | 0.00 | — | 0.00 | 시뮬과 모델 기준 격차 큼 |
+
+시뮬 평가의 한계 인정 — 실제 평가자 200건 작성으로 보강 필요.
+
+### Changed
+
+- `.gitignore`: `dist/` 추가 (PDF 빌드 산출물 git 외부)
+- `requirements.txt`: anthropic 패키지 (선택 의존성)
+
+---
+
 ## [2.3.0] — 2026-06-12 — MorphDetector 본격 구현 (kiwipiepy)
 
 ### Added

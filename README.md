@@ -192,8 +192,9 @@ v2.x 에서 4 방식 baseline (Rule/NLP/LLM/Ensemble) 비교 자동화 예정.
 | v2.1 | ✓ | 폴더 구조 정리, 패키지화, CLI, 단위 테스트 |
 | v2.1.1 | ✓ | D4 실기업 검증, 익명화 모듈, 개선 권고문 |
 | v2.2 | ✓ | ChunkDetector 정밀화 (short bullet/목적조사/양식 파이프) — D4 -16ppt |
-| **v2.3** | **현재** | kiwipiepy 형태소 분석 본격 통합 — 자동 FP 26→3.9% (-22ppt) |
-| v2.4 | 예정 | LLM 실 API 어댑터, 4 방식 baseline 비교 |
+| v2.3 | ✓ | kiwipiepy 형태소 분석 본격 통합 — 자동 FP 26→3.9% (-22ppt) |
+| **v2.4** | **현재** | Anthropic LLM 어댑터, 문서 PDF 번들, R1 시뮬 평가 |
+| v2.5 | 예정 | 4 방식 baseline 비교, 실제 사람 평가자 200건 |
 | v2.3 | 예정 | 200건 gold label, baseline 비교 자동화 |
 
 ---
