@@ -13,6 +13,39 @@
 
 ---
 
+## [2.3.0] — 2026-06-12 — MorphDetector 본격 구현 (kiwipiepy)
+
+### Added
+
+- **`kofinre/detectors/morph_detector.py`** — kiwipiepy(Kiwi C++ 엔진) 기반 본격 형태소 분석
+  - 세종 POS 태그셋: NNG/NNP/JKS/JKO/JX/VV/VA/XSV/EC/EF/MM
+  - 4 smell 정밀 검출 (S2 불완전 / S4 약한의무 / S5 주체누락 / S9 수동표현)
+  - kiwipiepy 미설치 환경 자동 fallback (정규식 휴리스틱)
+- `requirements.txt`: `kiwipiepy>=0.18`, `striprtf>=0.0.26` 추가
+
+### D1 회귀 검증 (v2.2 + v2.3)
+
+D1 비정제 56건에서 회귀 없음 확인 (94.1% 유지) — fix가 D1에는 영향 없음, D2/D4 정제·양식 데이터에만 효과 집중.
+
+### D4 v2.3 효과
+
+| 지표 | v2.1.1 | v2.2 | v2.3 (kiwipiepy) | 누적 Δ |
+|---|---:|---:|---:|---:|
+| Smell 비율 | 93.4% | 77.0% | 79.4% | -14.0 ppt |
+| **자동 likely FP** | **26%** | — | **3.9%** | **-22 ppt** ⭐ |
+| S2 불완전 | 235 | 181 | 181 | -54 |
+| S4 약한의무 | 58 | 58 | **113** | +55 (정확도 ↑) |
+| S5 주체누락 | 209 | 159 | 161 | -48 |
+| 표본 추출 | 195건 | 197건 | **200건 정확** | — |
+
+S4가 v2.3에서 증가한 것은 kiwipiepy가 EF 종결어미를 더 정확히 식별 — 기존에 놓치던 평서형 종결을 추가 검출. FA 회계 모듈에서 44 → 75건 증가.
+
+### Changed
+
+- `examples/peek_gold_sample.py` — D4 양식 미리보기 일반화
+
+---
+
 ## [2.2.0] — 2026-06-12 — ChunkDetector 정밀화 (D4 정성 검토 기반)
 
 ### 동기
