@@ -208,7 +208,7 @@ RFP 문서 → ① 추출 → ② Smell 정의 → ③ 앙상블 탐지 → ④ 
 | 1. 정규식 익명화 | 회사·인명·사번·연락처·이메일·URL·일자·외부파트너 8종 마스킹 |
 | 2. LOCAL_ONLY 격리 | git repo 밖 (`real_reqs_anonymized_LOCAL_ONLY.zip`) |
 | 3. 잔여 위험 모니터링 | 4+자 영문 약어, 영문+숫자 ID 카운트 |
-| 4. leak 검사 | git grep 5+회 (`토요타`, `TFSKR`, `TFSKO`, `Toyota`, `TFS-`, `TFS_`) — 모두 0 hit |
+| 4. leak 검사 | git grep 5+회 (회사명·약어·코드 토큰 6종 — 본 논문에선 마스킹) — 모두 0 hit |
 | 5. 통계 only 외부 | 본 논문 인용 0건, 통계·익명 짧은 패턴만 |
 
 ---
@@ -388,7 +388,7 @@ KoFinRe/
 ```
 
 ### B. 보안 처리 검증
-- 6 식별자 leak 검사 6+회 통과 (`토요타`, `TFSKR`, `TFSKO`, `Toyota`, `TFS-`, `TFS_`)
+- 6 식별자 leak 검사 6+회 통과 (회사·시스템 토큰 6종 — 본 논문에선 마스킹)
 - 백업 ZIP 3회 분리 (LOCAL_ONLY 마크)
 - D4 원문·익명화 데이터 git commit 0건
 
