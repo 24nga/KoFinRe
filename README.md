@@ -22,6 +22,7 @@
 
 > **논문 최종본 (MECE)**: [`docs/PAPER_FINAL.md`](./docs/PAPER_FINAL.md) 📄
 > **전체 프로젝트 여정 (v1.0 → v2.5)**: [`docs/JOURNEY.md`](./docs/JOURNEY.md) ⭐
+> **웹 평가기 (XLSX 업로드)**: [`web/index.html`](./web/index.html) 🌐
 
 ---
 

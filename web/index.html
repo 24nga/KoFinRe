@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>KoFinRe — 한국어 RFP 요구사항 품질 평가</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "Malgun Gothic", "맑은 고딕", BlinkMacSystemFont, sans-serif;
+    margin: 0; padding: 0;
+    background: #f5f7fa;
+    color: #2c3e50;
+  }
+  header {
+    background: linear-gradient(135deg, #1F4E79, #2E7DBF);
+    color: white;
+    padding: 24px 40px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  header h1 { margin: 0; font-size: 24px; }
+  header .subtitle { margin-top: 4px; opacity: 0.9; font-size: 14px; }
+  main { max-width: 1200px; margin: 24px auto; padding: 0 24px; }
+  .card {
+    background: white;
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  }
+  .step-title {
+    font-size: 18px;
+    color: #1F4E79;
+    border-bottom: 2px solid #e0e6ed;
+    padding-bottom: 8px;
+    margin-bottom: 16px;
+  }
+  .upload-area {
+    border: 2px dashed #c0c8d4;
+    border-radius: 8px;
+    padding: 48px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .upload-area:hover { border-color: #1F4E79; background: #f0f7ff; }
+  .upload-area.dragging { border-color: #1F4E79; background: #e6f0ff; }
+  .upload-icon { font-size: 48px; margin-bottom: 12px; }
+  .upload-area input { display: none; }
+  .btn {
+    background: #1F4E79;
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .btn:hover { background: #2E7DBF; }
+  .btn:disabled { background: #c0c8d4; cursor: not-allowed; }
+  .btn-secondary { background: #6c757d; }
+  .config-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 12px 0;
+  }
+  .config-row label { min-width: 140px; font-weight: 600; }
+  select, input[type="number"], input[type="text"] {
+    padding: 8px 12px;
+    border: 1px solid #c0c8d4;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .summary-box {
+    background: #f8fafc;
+    border-left: 4px solid #1F4E79;
+    padding: 12px 16px;
+    border-radius: 4px;
+  }
+  .summary-box .label { font-size: 12px; color: #6c757d; }
+  .summary-box .value { font-size: 24px; font-weight: 700; color: #1F4E79; }
+  table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 13px; }
+  thead { background: #1F4E79; color: white; }
+  th, td { padding: 8px 10px; text-align: left; border-bottom: 1px solid #e0e6ed; vertical-align: top; }
+  tbody tr.has-smell { background: #fff8e1; }
+  tbody tr:hover { background: #f0f7ff; }
+  .smell-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    background: #ff6b6b;
+    color: white;
+    margin: 1px 2px;
+  }
+  .smell-tag.s1 { background: #e74c3c; }
+  .smell-tag.s2 { background: #d35400; }
+  .smell-tag.s3 { background: #e67e22; }
+  .smell-tag.s4 { background: #f39c12; }
+  .smell-tag.s5 { background: #c0392b; }
+  .smell-tag.s6 { background: #9b59b6; }
+  .smell-tag.s7 { background: #8e44ad; }
+  .smell-tag.s8 { background: #2980b9; }
+  .smell-tag.s9 { background: #16a085; }
+  .smell-tag.s10 { background: #27ae60; }
+  .correction-marker { background: #fff3cd; padding: 1px 4px; border-radius: 3px; color: #856404; font-weight: 600; }
+  .hidden { display: none; }
+  .info-box {
+    background: #e7f3ff;
+    border-left: 4px solid #2E7DBF;
+    padding: 12px 16px;
+    margin: 12px 0;
+    border-radius: 4px;
+  }
+  .warning-box {
+    background: #fff3cd;
+    border-left: 4px solid #f39c12;
+    padding: 12px 16px;
+    margin: 12px 0;
+    border-radius: 4px;
+  }
+  .smell-legend {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 8px;
+    font-size: 12px;
+    margin-top: 12px;
+  }
+  .smell-legend > div { display: flex; align-items: center; gap: 6px; }
+  .progress { background: #e0e6ed; border-radius: 4px; height: 8px; margin: 8px 0; overflow: hidden; }
+  .progress > div { background: #1F4E79; height: 100%; width: 0%; transition: width 0.3s; }
+  footer { text-align: center; padding: 24px; color: #6c757d; font-size: 12px; }
+  footer a { color: #1F4E79; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>KoFinRe — 한국어 RFP 요구사항 품질 평가</h1>
+  <div class="subtitle">10종 Smell 자동 검출 + 수정 권고 마커 · 100% 브라우저 처리 (데이터 서버 전송 없음)</div>
+</header>
+
+<main>
+
+  <!-- Step 1. 파일 업로드 -->
+  <div class="card">
+    <div class="step-title">1️⃣ Excel 파일 업로드</div>
+    <div class="info-box">
+      <strong>지원 형식:</strong> .xlsx<br>
+      <strong>권장 구조:</strong> 요구사항 정의서 양식 — <code>요구사항명</code>, <code>요구사항 내용</code> 컬럼 자동 식별. 다른 컬럼은 보존되어 결과에 포함됩니다.<br>
+      <strong>처리 위치:</strong> 모든 평가는 브라우저 내부에서만 — 서버에 업로드되지 않습니다.
+    </div>
+    <label for="fileInput" class="upload-area" id="dropZone">
+      <div class="upload-icon">📊</div>
+      <div><strong>파일을 끌어놓거나 클릭해서 선택</strong></div>
+      <div style="color:#6c757d; margin-top:4px;">.xlsx 만 지원</div>
+      <input type="file" id="fileInput" accept=".xlsx">
+    </label>
+    <div id="fileName" style="margin-top:12px; color:#1F4E79; font-weight:600;"></div>
+  </div>
+
+  <!-- Step 2. 설정 -->
+  <div class="card hidden" id="configCard">
+    <div class="step-title">2️⃣ 시트·컬럼 선택</div>
+    <div class="config-row">
+      <label>시트:</label>
+      <select id="sheetSelect"></select>
+    </div>
+    <div class="config-row">
+      <label>요구사항명 컬럼:</label>
+      <select id="nameColSelect"></select>
+    </div>
+    <div class="config-row">
+      <label>요구사항 내용 컬럼:</label>
+      <select id="contentColSelect"></select>
+    </div>
+    <div class="config-row">
+      <label>헤더 행:</label>
+      <input type="number" id="headerRow" value="1" min="1" max="10" style="width:80px;">
+      <span style="color:#6c757d; font-size:12px;">(보통 1, "표지" 시트는 다를 수 있음)</span>
+    </div>
+    <button class="btn" id="evaluateBtn">▶ 평가 시작</button>
+  </div>
+
+  <!-- Step 3. 진행 -->
+  <div class="card hidden" id="progressCard">
+    <div class="step-title">3️⃣ 평가 진행</div>
+    <div class="progress"><div id="progressBar"></div></div>
+    <div id="progressText" style="color:#6c757d; font-size:13px;"></div>
+  </div>
+
+  <!-- Step 4. 결과 -->
+  <div class="card hidden" id="resultCard">
+    <div class="step-title">4️⃣ 평가 결과</div>
+    <div class="summary-grid" id="summaryGrid"></div>
+
+    <div class="smell-legend">
+      <div><span class="smell-tag s1">S1</span> 복합의무</div>
+      <div><span class="smell-tag s2">S2</span> 불완전</div>
+      <div><span class="smell-tag s3">S3</span> 모호어</div>
+      <div><span class="smell-tag s4">S4</span> 약한의무</div>
+      <div><span class="smell-tag s5">S5</span> 주체누락</div>
+      <div><span class="smell-tag s6">S6</span> 정량부재</div>
+      <div><span class="smell-tag s7">S7</span> 미정의약어</div>
+      <div><span class="smell-tag s8">S8</span> 범위모호</div>
+      <div><span class="smell-tag s9">S9</span> 수동표현</div>
+      <div><span class="smell-tag s10">S10</span> 검증불가</div>
+    </div>
+
+    <div style="margin-top:16px;">
+      <button class="btn" id="downloadBtn">⬇ 결과 Excel 다운로드</button>
+      <button class="btn btn-secondary" id="resetBtn">새 파일 평가</button>
+    </div>
+
+    <div style="overflow-x:auto; margin-top:16px; max-height:600px; overflow-y:auto;">
+      <table id="resultTable"></table>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  KoFinRe v2.5 · <a href="https://github.com/24nga/KoFinRe" target="_blank">GitHub</a> · 10종 한국어 smell taxonomy + 수정 권고 마커
+</footer>
+
+<script>
+// =========================================================================
+// KoFinRe Web Engine — RegexDetector + 휴리스틱 교정 JS 포팅
+// =========================================================================
+
+const SMELL_CODES = ['S1','S2','S3','S4','S5','S6','S7','S8','S9','S10'];
+const SMELL_NAMES_KO = {
+  S1:'복합의무', S2:'불완전', S3:'모호어', S4:'약한의무', S5:'주체누락',
+  S6:'정량부재', S7:'미정의약어', S8:'범위모호', S9:'수동표현', S10:'검증불가',
+};
+
+const VAGUE_TERMS = [
+  '필요한','적절한','적정한','신속한','신속히','신속하게','효율적','효과적','충분한','충분히',
+  '원활','원활히','원활한','다양한','다수의','양호한','우수한','적합한','적시','적시에',
+  '안정적','안정적인','안정적으로','편리한','편리하게','용이한','용이하게','간편한','간편하게',
+  '최적','최적의','최적화','체계적','체계적으로','신뢰성','신뢰성 있는','유연한','유연하게',
+  '광범위','광범위한','폭넓은','폭넓게','포괄적','포괄적으로','실시간',
+  '주기적','주기적으로','정기적','정기적으로','지속적','적극적','상세히','구체적으로','명료하게','정확히',
+];
+
+const STRONG_DUTY_RE = /(?:하|되|이|있)여야\s*(?:한다|함|됨)|해야\s*(?:한다|함)|할\s*수\s*있어야\s*(?:한다|함)|반드시\s+[가-힣]+|필수\s*(?:이다|로|적|항목)|의무\s*(?:이다|적|로)|[가-힣]+토록\s*한다/;
+const WEAK_DUTY_END = /(한다|된다|함|됨)\s*\.?\s*$/;
+const PASSIVE_RE = /(되어야\s*한다|되어야\s*함|지원되어야|구현되어야|제공되어야|보장되어야|적용되어야|관리되어야|구축되어야|반영되어야|표시되어야|저장되어야|처리되어야|확보되어야|수행되어야|배포되어야|기록되어야|연계되어야|되도록)/;
+const COORD_RE = /(및\s*\/\s*또는|등을|등의|등에|등 ?\(|포함\s+(?!한다)|관련(?:한|된)\s+(?!기관))/;
+const SUBJECT_RE = /^[가-힣A-Za-z0-9\s\(\)\[\]\-_]+(가|이|은|는|에서|이며)\s/;
+const SYSTEM_ACTOR_RE = /(?:^|[\s\(])(본\s*시스템|본\s*사업|본\s*모듈|본\s*서비스|시스템|모듈|서비스|애플리케이션|클라이언트|서버|사용자|관리자|운영자|개발자|이용자|고객|발주\s*기관|제안사|수행사|발주자|발주처|관리\s*화면|화면)[가-힣]*\s*(?:은|는|이|가|에서|이며|에서는)?/;
+const ACTION_NOUN_BEFORE_DUTY = /(개발|구축|운영|관리|처리|지원|제공|수행|반영|연계|적용|분석|점검|모니터링|배포|등록|수정|삭제|조회|저장|기록|표시|보고|보호|암호화|전송|수집|구성|설계|구현|작성|준수|보장|확보|보유|갖춤|제출|기술|제시|포함|마련|확인)\s*(?:하|되|이|있)여야/;
+const PERF_KEYS = /(성능|속도|처리량|응답시간|동시접속|건수|TPS|처리율|용량|대수|초당|분당|시간당|정확도|가용성)/;
+const NUMBER_RE = /\d+\s*(개|건|초|분|시간|일|년|GB|MB|TB|만|억|명|건\/초|TPS|%|밀리초|ms)/;
+const ACRONYM_RE = /\b[A-Z]{2,6}\b/g;
+const DEFINED_RE = /([A-Z]{2,6})\s*[:：]\s*[^,;\n]+|[\(（]\s*([A-Z]{2,6})\s*[\)）]|([A-Z]{2,6})\s*[\(（]/g;
+const QUALITATIVE_RE = /(효율적|효과적|안정적|신뢰성|편리|용이|간편|최적|체계적|원활|유연)/;
+
+const ACRONYM_WHITELIST = new Set([
+  'RFP','ICT','IT','OS','PC','DB','API','UI','UX','AI','ML','ETL','DR','OK','URL','HTTP','HTTPS',
+  'JSON','XML','HTML','CSS','JS','SQL','PDF','HWP','SMS','SSO','VPN','LDAP','WAS','WAF','PMO','SI',
+  'SW','HW','LAN','WAN','GUI','CLI','CPU','RAM','SSD','HDD','USB','LTS','RPA','NLP','EAI','ESB','MQ',
+  'MSA','MOU','SLA','KPI','TCP','UDP','IP','RFC','SDK','IDE','BMT','POC','HF','BOK','KAMCO','HUG',
+  'KRX','KIC','KIBO','KDIC','KODIT','KFTC','KSD','VOC','ECOS','CBDC','ARS','SIEM','MES','LLM','GPU',
+  'CB','NICE','KCB','DSR','DTI','VIN','CMS','PEP','EDD','KYC','STR','CTR','FATF','KOFIU','AML','PB','RM',
+  'AUC','KS','ROC','AES','AES256','ETF','ELS','MLOPS','ERP','SCM','CRM','PMS','ITSM','ITIL',
+  'META','PROJECT','CD','CI','CO','KR','KO','DO','OR','OF','BY','NO','ID','VS','PM','AM','PL',
+]);
+
+function collectUndefinedAcronyms(allText) {
+  const all = new Set(allText.match(ACRONYM_RE) || []);
+  const defined = new Set();
+  let m;
+  const dre = new RegExp(DEFINED_RE.source, 'g');
+  while ((m = dre.exec(allText)) !== null) {
+    if (m[1]) defined.add(m[1]);
+    if (m[2]) defined.add(m[2]);
+    if (m[3]) defined.add(m[3]);
+  }
+  const undef = new Set();
+  all.forEach(a => { if (!defined.has(a) && !ACRONYM_WHITELIST.has(a)) undef.add(a); });
+  return undef;
+}
+
+function detectSmells(sentence, undefAcrs) {
+  const s = (sentence || '').trim();
+  const flags = {};
+  SMELL_CODES.forEach(c => flags[c] = 0);
+  if (s.length < 20) return flags;
+
+  // S1 — 의무 2회 이상
+  const dutyMatches = s.match(new RegExp(STRONG_DUTY_RE.source, 'g')) || [];
+  if (dutyMatches.length >= 2) flags.S1 = 1;
+
+  // S2 — 의무 표현 + 목적 부재 + 동사 명사형도 부재
+  const hasDuty = STRONG_DUTY_RE.test(s);
+  const hasObject = /(을|를)\s+(?:[가-힣\s]+?)(?:해야|하여야|할\s*수\s*있어야)/.test(s);
+  const hasActionNoun = ACTION_NOUN_BEFORE_DUTY.test(s);
+  if (hasDuty && !hasObject && !hasActionNoun) flags.S2 = 1;
+
+  // S3 — 모호어
+  for (const t of VAGUE_TERMS) if (s.includes(t)) { flags.S3 = 1; break; }
+
+  // S4 — 평서형 + 의무 부재 + 수동 부재
+  if (WEAK_DUTY_END.test(s) && !STRONG_DUTY_RE.test(s) && !PASSIVE_RE.test(s)) flags.S4 = 1;
+
+  // S5 — 의무 표현 + 주체 부재
+  const dutyMatch = s.match(STRONG_DUTY_RE);
+  if (dutyMatch) {
+    const preceding = s.substring(0, dutyMatch.index);
+    const hasSystemActor = SYSTEM_ACTOR_RE.test(preceding);
+    const hasGeneralSubject = SUBJECT_RE.test(s);
+    if (!hasSystemActor && !hasGeneralSubject) flags.S5 = 1;
+  }
+
+  // S6 — 성능 + 숫자 없음
+  if (PERF_KEYS.test(s) && !NUMBER_RE.test(s)) flags.S6 = 1;
+
+  // S7 — 미정의 약어
+  if (undefAcrs) {
+    for (const a of undefAcrs) {
+      if (s.includes(a)) { flags.S7 = 1; break; }
+    }
+  }
+
+  // S8 — 범위 모호
+  if (COORD_RE.test(s)) flags.S8 = 1;
+
+  // S9 — 수동
+  if (PASSIVE_RE.test(s)) flags.S9 = 1;
+
+  // S10 — 정성 표현 + 측정 부재
+  if (QUALITATIVE_RE.test(s) && !NUMBER_RE.test(s)) flags.S10 = 1;
+
+  return flags;
+}
+
+// 휴리스틱 교정
+const VAGUE_REPLACEMENTS = {
+  '실시간으로': '[명세: 응답시간 임계값]',
+  '신속히': '[명세: 시간 기준]',
+  '신속하게': '[명세: 시간 기준]',
+  '효율적으로': '[명세: 측정 기준]',
+  '효율적': '[명세: 효율 측정]',
+  '효과적으로': '[명세: 측정 기준]',
+  '적절히': '[명세: 적정 기준]',
+  '적절한': '[명세: 적정 기준]',
+  '안정적으로': '[명세: 가용성 SLO]',
+  '안정적': '[명세: 가용성 SLO]',
+  '충분한': '[명세: 충분 기준]',
+  '체계적으로': '[명세: 측정 기준]',
+  '원활하게': '[명세: 측정 기준]',
+  '원활히': '[명세: 측정 기준]',
+};
+
+function correctSentence(sentence, flags) {
+  let s = sentence;
+  const rules = [];
+
+  // S3 vague replacements
+  if (flags.S3) {
+    for (const [term, rep] of Object.entries(VAGUE_REPLACEMENTS)) {
+      if (s.includes(term)) {
+        s = s.split(term).join(rep);
+        rules.push(`S3:${term}→측정요청`);
+      }
+    }
+  }
+
+  // S4 weak → strong
+  if (flags.S4) {
+    const before = s;
+    s = s.replace(/(?<=[가-힣])한다([\.\s]*)$/, '해야 한다$1');
+    s = s.replace(/(?<=[가-힣])된다([\.\s]*)$/, '되어야 한다$1');
+    s = s.replace(/(?<=[가-힣])함([\.\s]*)$/, '하여야 함$1');
+    s = s.replace(/(?<=[가-힣])됨([\.\s]*)$/, '되어야 함$1');
+    if (s !== before) rules.push('S4:평서형→의무형');
+  }
+
+  // S8 등을 → [열거 명시]
+  if (flags.S8) {
+    const before = s;
+    s = s.replace(/(\S+),\s*(\S+)\s*등을\s/g, '$1, $2 [열거 명시 필요]을 ');
+    if (s !== before) rules.push('S8:등을→[열거명시]');
+  }
+
+  return { corrected: s, rules };
+}
+
+// =========================================================================
+// UI 로직
+// =========================================================================
+
+let workbook = null;
+let resultData = null;
+let currentSheetName = null;
+let originalFileName = '';
+
+const $ = id => document.getElementById(id);
+
+$('fileInput').addEventListener('change', e => handleFile(e.target.files[0]));
+
+const dz = $('dropZone');
+['dragover','dragenter'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add('dragging'); }));
+['dragleave','drop'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove('dragging'); }));
+dz.addEventListener('drop', e => {
+  if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+});
+
+async function handleFile(file) {
+  if (!file || !file.name.toLowerCase().endsWith('.xlsx')) {
+    alert('.xlsx 파일만 지원됩니다');
+    return;
+  }
+  originalFileName = file.name.replace(/\.xlsx$/i, '');
+  $('fileName').textContent = `✓ ${file.name} (${(file.size/1024).toFixed(1)} KB)`;
+
+  const ab = await file.arrayBuffer();
+  workbook = XLSX.read(ab, { type: 'array' });
+  populateSheetSelect();
+  $('configCard').classList.remove('hidden');
+}
+
+function populateSheetSelect() {
+  const ss = $('sheetSelect');
+  ss.innerHTML = '';
+  workbook.SheetNames.forEach(n => {
+    const opt = document.createElement('option');
+    opt.value = n; opt.textContent = n;
+    // 요구사항 시트 자동 선택
+    if (n.includes('요구사항') && !n.includes('설명') && !n.includes('샘플')) {
+      opt.selected = true;
+    }
+    ss.appendChild(opt);
+  });
+  ss.addEventListener('change', populateColumnSelects);
+  populateColumnSelects();
+}
+
+function populateColumnSelects() {
+  const sheetName = $('sheetSelect').value;
+  const ws = workbook.Sheets[sheetName];
+  const range = XLSX.utils.decode_range(ws['!ref']);
+  const headerRow = parseInt($('headerRow').value, 10) - 1;
+  const nameSel = $('nameColSelect');
+  const contentSel = $('contentColSelect');
+  nameSel.innerHTML = ''; contentSel.innerHTML = '';
+  let nameIdx = -1, contentIdx = -1;
+  for (let c = range.s.c; c <= range.e.c; c++) {
+    const cell = ws[XLSX.utils.encode_cell({r: headerRow, c})];
+    const v = cell ? String(cell.v || '').trim() : '';
+    const label = `${XLSX.utils.encode_col(c)}: ${v || '(빈칸)'}`;
+    [nameSel, contentSel].forEach(sel => {
+      const opt = document.createElement('option');
+      opt.value = c; opt.textContent = label;
+      sel.appendChild(opt);
+    });
+    if (v === '요구사항명' || v === '요구사항 명' || v === '요구사항이름') nameIdx = c;
+    if (v === '요구사항 내용' || v === '요구사항내용' || v === '내용' || v === '설명') contentIdx = c;
+  }
+  if (nameIdx >= 0) nameSel.value = nameIdx;
+  if (contentIdx >= 0) contentSel.value = contentIdx;
+}
+
+$('headerRow').addEventListener('change', populateColumnSelects);
+$('sheetSelect').addEventListener('change', populateColumnSelects);
+
+$('evaluateBtn').addEventListener('click', evaluate);
+
+async function evaluate() {
+  const sheetName = $('sheetSelect').value;
+  const nameCol = parseInt($('nameColSelect').value, 10);
+  const contentCol = parseInt($('contentColSelect').value, 10);
+  const headerRow = parseInt($('headerRow').value, 10) - 1;
+  const ws = workbook.Sheets[sheetName];
+  const range = XLSX.utils.decode_range(ws['!ref']);
+
+  $('configCard').classList.add('hidden');
+  $('progressCard').classList.remove('hidden');
+
+  currentSheetName = sheetName;
+  const rows = [];
+  for (let r = headerRow + 1; r <= range.e.r; r++) {
+    const nameCell = ws[XLSX.utils.encode_cell({r, c: nameCol})];
+    const contentCell = ws[XLSX.utils.encode_cell({r, c: contentCol})];
+    const name = nameCell ? String(nameCell.v || '').trim() : '';
+    const content = contentCell ? String(contentCell.v || '').trim() : '';
+    if (!name && !content) continue;
+    const sentence = (name + ' | ' + content).trim();
+    rows.push({ rowNum: r + 1, name, content, sentence });
+  }
+
+  // 약어 컨텍스트
+  const allText = rows.map(r => r.sentence).join('\n');
+  const undefAcrs = collectUndefinedAcronyms(allText);
+
+  // 평가
+  resultData = [];
+  for (let i = 0; i < rows.length; i++) {
+    const r = rows[i];
+    const flags = detectSmells(r.sentence, undefAcrs);
+    const detectedSmells = SMELL_CODES.filter(c => flags[c]);
+    const correction = correctSentence(r.sentence, flags);
+    resultData.push({
+      ...r,
+      flags,
+      detectedSmells,
+      hasSmell: detectedSmells.length > 0 ? 1 : 0,
+      corrected: correction.corrected,
+      rules: correction.rules,
+    });
+
+    if (i % 10 === 0) {
+      const pct = ((i + 1) / rows.length * 100).toFixed(0);
+      $('progressBar').style.width = pct + '%';
+      $('progressText').textContent = `${i + 1} / ${rows.length} 처리 중...`;
+      await new Promise(resolve => setTimeout(resolve, 0));
+    }
+  }
+  $('progressBar').style.width = '100%';
+  $('progressText').textContent = `완료 — ${rows.length}건 평가`;
+
+  showResults();
+}
+
+function showResults() {
+  $('progressCard').classList.add('hidden');
+  $('resultCard').classList.remove('hidden');
+
+  const total = resultData.length;
+  const smelly = resultData.filter(r => r.hasSmell).length;
+  const smellCounts = {};
+  SMELL_CODES.forEach(c => smellCounts[c] = 0);
+  resultData.forEach(r => SMELL_CODES.forEach(c => { if (r.flags[c]) smellCounts[c]++; }));
+
+  // 요약
+  let summaryHtml = `
+    <div class="summary-box"><div class="label">전체 요구사항</div><div class="value">${total}</div></div>
+    <div class="summary-box"><div class="label">Smell 검출</div><div class="value">${smelly}</div></div>
+    <div class="summary-box"><div class="label">Smell 비율</div><div class="value">${(100*smelly/Math.max(total,1)).toFixed(1)}%</div></div>
+    <div class="summary-box"><div class="label">깨끗한 요구사항</div><div class="value">${total - smelly}</div></div>
+  `;
+  // Smell 유형별
+  SMELL_CODES.forEach(c => {
+    if (smellCounts[c] > 0) {
+      summaryHtml += `<div class="summary-box"><div class="label">${c} ${SMELL_NAMES_KO[c]}</div><div class="value">${smellCounts[c]}</div></div>`;
+    }
+  });
+  $('summaryGrid').innerHTML = summaryHtml;
+
+  // 테이블 (최대 200건 미리보기)
+  const headerCols = ['No.','요구사항명','요구사항 내용','검출 Smell','수정 권고'];
+  let html = '<thead><tr>' + headerCols.map(h => `<th>${h}</th>`).join('') + '</tr></thead><tbody>';
+  resultData.slice(0, 200).forEach((r, i) => {
+    const tags = r.detectedSmells.map(c => `<span class="smell-tag ${c.toLowerCase()}">${c}</span>`).join('');
+    let corrected = r.corrected;
+    corrected = corrected.replace(/\[명세[^\]]+\]/g, m => `<span class="correction-marker">${m}</span>`);
+    corrected = corrected.replace(/\[열거[^\]]+\]/g, m => `<span class="correction-marker">${m}</span>`);
+    html += `
+      <tr class="${r.hasSmell ? 'has-smell' : ''}">
+        <td>${i+1}</td>
+        <td>${escapeHtml(r.name)}</td>
+        <td>${escapeHtml(r.content.substring(0, 200))}${r.content.length > 200 ? '…' : ''}</td>
+        <td>${tags || '<span style="color:#27ae60;">✓</span>'}</td>
+        <td>${tags ? corrected : '-'}</td>
+      </tr>`;
+  });
+  html += '</tbody>';
+  if (resultData.length > 200) {
+    html += `<tfoot><tr><td colspan="5" style="text-align:center; color:#6c757d; padding:12px;">... 추가 ${resultData.length - 200}건은 다운로드 파일에서 확인</td></tr></tfoot>`;
+  }
+  $('resultTable').innerHTML = html;
+}
+
+function escapeHtml(s) {
+  return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+$('downloadBtn').addEventListener('click', downloadResult);
+
+function downloadResult() {
+  if (!resultData) return;
+
+  // 원본 시트 복제 + 결과 컬럼 추가
+  const ws = workbook.Sheets[currentSheetName];
+  const range = XLSX.utils.decode_range(ws['!ref']);
+  const headerRow = parseInt($('headerRow').value, 10) - 1;
+  const newColStart = range.e.c + 1;
+
+  // 결과 헤더 컬럼들
+  const resultHeaders = ['has_smell', ...SMELL_CODES, '검출_Smell_이름', '수정_권고', '적용_규칙'];
+  resultHeaders.forEach((h, i) => {
+    ws[XLSX.utils.encode_cell({r: headerRow, c: newColStart + i})] = { v: h, t: 's' };
+  });
+
+  // 결과 row 매핑
+  const byRow = {};
+  resultData.forEach(r => byRow[r.rowNum - 1] = r);
+
+  for (let r = headerRow + 1; r <= range.e.r; r++) {
+    const data = byRow[r];
+    if (!data) continue;
+    const cells = [
+      data.hasSmell,
+      ...SMELL_CODES.map(c => data.flags[c]),
+      data.detectedSmells.map(c => `${c}(${SMELL_NAMES_KO[c]})`).join(', '),
+      data.corrected,
+      data.rules.join(', '),
+    ];
+    cells.forEach((v, i) => {
+      ws[XLSX.utils.encode_cell({r, c: newColStart + i})] = {
+        v: v,
+        t: typeof v === 'number' ? 'n' : 's',
+      };
+    });
+  }
+
+  // range 확장
+  ws['!ref'] = XLSX.utils.encode_range({
+    s: range.s,
+    e: { r: range.e.r, c: newColStart + resultHeaders.length - 1 }
+  });
+
+  // 요약 시트 추가
+  const total = resultData.length;
+  const smelly = resultData.filter(r => r.hasSmell).length;
+  const smellCounts = {};
+  SMELL_CODES.forEach(c => smellCounts[c] = 0);
+  resultData.forEach(r => SMELL_CODES.forEach(c => { if (r.flags[c]) smellCounts[c]++; }));
+
+  const summaryRows = [
+    ['KoFinRe 평가 요약', ''],
+    ['', ''],
+    ['총 요구사항', total],
+    ['Smell 검출 (1+)', smelly],
+    ['Smell 비율', `${(100*smelly/Math.max(total,1)).toFixed(1)}%`],
+    ['깨끗한 요구사항', total - smelly],
+    ['', ''],
+    ['Smell 유형별', ''],
+    ...SMELL_CODES.map(c => [`${c} ${SMELL_NAMES_KO[c]}`, smellCounts[c]]),
+  ];
+  const summaryWs = XLSX.utils.aoa_to_sheet(summaryRows);
+  XLSX.utils.book_append_sheet(workbook, summaryWs, 'KoFinRe_요약');
+
+  // 다운로드
+  const outName = `${originalFileName}_KoFinRe평가.xlsx`;
+  XLSX.writeFile(workbook, outName);
+}
+
+$('resetBtn').addEventListener('click', () => {
+  workbook = null; resultData = null;
+  $('fileInput').value = '';
+  $('fileName').textContent = '';
+  ['configCard','progressCard','resultCard'].forEach(id => $(id).classList.add('hidden'));
+  window.scrollTo({top: 0, behavior: 'smooth'});
+});
+
+</script>
+
+</body>
+</html>

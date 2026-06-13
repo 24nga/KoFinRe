@@ -13,6 +13,30 @@
 
 ---
 
+## [2.5.1] — 2026-06-12 — 웹 평가기 + MECE 논문
+
+### Added
+
+- **`web/index.html`** — 단일 HTML 웹 평가기
+  - SheetJS(xlsx@0.18.5) 기반 XLSX 파싱·생성
+  - 100% 클라이언트 처리 — 서버 전송 0건, 영업 비밀 안전
+  - 자동 시트·컬럼 식별 (요구사항명·내용)
+  - 10종 smell 검출 + 휴리스틱 교정 마커
+  - 결과 미리보기(200건) + 원본 + 결과 컬럼 + 요약 시트 XLSX 다운로드
+- **`web/README.md`** — 웹 평가기 사용 가이드
+- **`docs/PAPER_FINAL.md`** — MECE 학술 논문 최종본
+  - 8 섹션 (Introduction → Conclusion) + References + Appendix
+  - RQ1~5 답 §6에 별도 분리
+  - §7 Threats to Validity 4종
+  - Appendix D MECE 검증표
+
+### Changed
+
+- README: 웹 평가기 + PAPER_FINAL 링크 추가
+- PDF 번들: 8 문서 통합 → 9 문서 (`KoFinRe_v2.5_FINAL.pdf`)
+
+---
+
 ## [2.5.0] — 2026-06-12 — 휴리스틱 교정 + 4방식 baseline 비교
 
 ### Added
