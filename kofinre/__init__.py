@@ -1,8 +1,8 @@
 """KoFinRe-QA Framework — Korean Public Financial RFP Quality Analysis."""
-__version__ = "2.7.0"
+__version__ = "2.8.0"
 
 SMELL_CODES = ["S1","S2","S3","S4","S5","S6","S7","S8","S9","S10",
-               "S11","S12","S13","S14","S15"]
+               "S11","S12","S13","S14","S15","S16","S17","S18","S19"]
 SMELL_NAMES = {
     "S1": "Non-atomic",
     "S2": "Incomplete",
@@ -19,6 +19,10 @@ SMELL_NAMES = {
     "S13": "Speculation",
     "S14": "MissingPersona",
     "S15": "PronounAmbiguity",
+    "S16": "NecessityUnclear",
+    "S17": "FeasibilityConcern",
+    "S18": "MissingTraceabilityID",
+    "S19": "ConstraintCategoryUnclear",
 }
 SMELL_NAMES_KO = {
     "S1": "복합의무",
@@ -36,4 +40,8 @@ SMELL_NAMES_KO = {
     "S13": "추측표현",
     "S14": "수혜자누락",
     "S15": "지시어모호",
+    "S16": "필요성불명확",
+    "S17": "실현불가",
+    "S18": "추적ID부재",
+    "S19": "제약카테고리불명",
 }

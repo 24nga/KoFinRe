@@ -13,6 +13,66 @@
 
 ---
 
+## [2.8.0] — 2026-06-12 — CMMI/NCS 기반 Smell 15 → 19종 확장
+
+### 동기
+
+사용자 제공 CMMI(REQM/RD) 9 작성 원칙 + NCS 중분류 5 제약 카테고리 표를 참고하여 v2.7 S15 까지에서 부재했던 **Necessary·Feasible·Traceable·Constraint** 영역을 보강.
+
+### Added
+
+- **`docs/CMMI_NCS_COMPARISON.md`** — CMMI 9 원칙 + NCS 5 제약 카테고리 vs KoFinRe 매핑 분석
+  - 9 원칙 충족도: 5/9 (Singular/Unambiguous/Verifiable/Complete/Impl-free)
+  - NCS 5 카테고리: 0/5 (전무 → v2.8에서 분류 보조)
+  - 4 신규 smell 도출 (S16~S19)
+  - CMMI 체크리스트 자동 매핑 표
+
+- **Smell taxonomy 확장: 15종 → 19종**
+
+  | 코드 | 한국어 | CMMI 영역 | 매핑 |
+  |---|---|---|---|
+  | **S16** | 필요성불명확 | REQM Necessary | 선호하는·강제로·임의로·개발팀이 |
+  | **S17** | 실현불가 | RD Feasible | 100%·0초·완벽한·5 9s 이상 |
+  | **S18** | 추적ID부재 | REQM Traceable | REQ-ID + 출처 둘 다 부재 |
+  | **S19** | 제약카테고리불명 | NCS 5 분류 | 제약 표현 + 카테고리 미분류 |
+
+- **`kofinre/korean_patterns.py`** — 신규 사전 5종 (CMMI L 카테고리)
+  - `NECESSITY_RED_FLAGS` 정규식 — 주관·선호·강제 표현
+  - `INFEASIBLE_ABSOLUTE` 정규식 — 100%·0초·완벽한·99.9999%
+  - `REQ_ID_PATTERN` — `FUNC-AUTH-001`, `REQ-001` 등 ID 형식
+  - `SOURCE_RATIONALE` — 출처·근거·법령 인용
+  - **NCS 5 분류 사전**: `CONSTRAINT_TECH`, `CONSTRAINT_BIZ`, `CONSTRAINT_COMP`, `CONSTRAINT_OPS`, `CONSTRAINT_SEC`
+
+- **헬퍼 함수 5종**: `has_necessity_red_flag`, `has_infeasible_absolute`, `find_req_id`, `has_source_rationale`, `classify_constraint_category`
+
+- **`tests/test_cmmi_smells.py`** — 18 단위 테스트 (18/18 통과)
+  - S16~S19 각 3~5건 + Korean Patterns 헬퍼 5건
+
+### Changed
+
+- `kofinre/__init__.py`: SMELL_CODES 19개, 한국어 이름 4종 추가
+- `kofinre/ensemble.py`: SMELL_CODES sync
+- `kofinre/detectors/regex_detector.py`: S16~S19 검출 로직 추가
+- 나머지 4 detector: S16~S19 false 초기화
+
+### 표준 커버리지 누적 (v2.8)
+
+| 영역 | v2.6 (S10) | v2.7 (S15) | **v2.8 (S19)** | Δ |
+|---|---:|---:|---:|---:|
+| **전체 표준 커버리지** | 28% | ~55% | **~70%** | +42pp |
+| CMMI 9 원칙 | 5/9 | 5/9 | **8/9** | Necessary·Feasible·Traceable 완전 |
+| NCS 5 제약 카테고리 | 0/5 | 0/5 | **5/5 분류 보조** | +5 |
+| INCOSE 11 결함 | 4/11 | 8/11 | 8/11 | (S11~S15 효과) |
+| ISO 29148 9 특성 | 5/9 | 7/9 | **8/9** | Necessary·Feasible 추가 |
+
+### 검증
+
+- 신규 18/18 통과 (`test_cmmi_smells.py`)
+- 통합 60/61 (XYZW edge case 1건만 유지)
+- basic_usage 회귀 없음
+
+---
+
 ## [2.7.0] — 2026-06-12 — Smell taxonomy 10 → 15종 확장 (ISO 29148 기반)
 
 ### 동기

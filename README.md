@@ -22,6 +22,7 @@
 
 > **논문 최종본 (MECE)**: [`docs/PAPER_FINAL.md`](./docs/PAPER_FINAL.md) 📄
 > **요구공학 표준 ↔ KoFinRe 갭 분석**: [`docs/STANDARDS_COMPARISON.md`](./docs/STANDARDS_COMPARISON.md) 📊
+> **CMMI/NCS 비교 분석**: [`docs/CMMI_NCS_COMPARISON.md`](./docs/CMMI_NCS_COMPARISON.md) 📋
 > **전체 프로젝트 여정 (v1.0 → v2.5)**: [`docs/JOURNEY.md`](./docs/JOURNEY.md) ⭐
 > **웹 평가기 (XLSX 업로드)**: [`web/index.html`](./web/index.html) 🌐
 
@@ -203,8 +204,9 @@ v2.x 에서 4 방식 baseline (Rule/NLP/LLM/Ensemble) 비교 자동화 예정.
 | v2.5.1 | ✓ | 웹 HTML 평가기, MECE 논문 PAPER_FINAL.md |
 | v2.6 | ✓ | 한국어 특화 고도화 — korean_patterns 모듈 (종결5분류/격조사/번역체) |
 | v2.6.1 | ✓ | ISO 29148 갭 분석 — STANDARDS_COMPARISON.md |
-| **v2.7** | **현재** | **Smell 10 → 15종** (S11~S15: 구현편향/부정문/추측/수혜자/지시어) |
-| v2.8 | 예정 | S16~S18 (Modifiability/Consistency/EARS) |
+| v2.7 | ✓ | Smell 10 → 15종 (S11~S15: 구현편향/부정문/추측/수혜자/지시어) |
+| **v2.8** | **현재** | **Smell 15 → 19종** (S16~S19: 필요성·실현·추적·제약) — CMMI/NCS 기반 |
+| v2.9 | 예정 | S20 일관성 (의미 임베딩) + EARS 권장 도구 |
 | v2.3 | 예정 | 200건 gold label, baseline 비교 자동화 |
 
 ---

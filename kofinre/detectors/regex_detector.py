@@ -226,4 +226,36 @@ class RegexDetector(BaseDetector):
         res.set("S15", pronoun_amb, Confidence.MEDIUM if pronoun_amb else 0.0,
                 kp.DEMONSTRATIVE_PRONOUN.search(s).group() if pronoun_amb else "")
 
+        # ─── v2.8 신규 — CMMI/NCS 기반 S16~S19 ───
+
+        # S16 Necessity-unclear — 비즈니스 근거 없는 임의 지시
+        nec_red, nec_term = kp.has_necessity_red_flag(s)
+        res.set("S16", nec_red, Confidence.HIGH if nec_red else 0.0,
+                nec_term if nec_term else "")
+
+        # S17 Feasibility-concern — 100%/0초/완벽한 등 절대 표현
+        infeasible, inf_term = kp.has_infeasible_absolute(s)
+        res.set("S17", infeasible, Confidence.HIGH if infeasible else 0.0,
+                inf_term if inf_term else "")
+
+        # S18 Missing-traceability-ID — REQ-ID 패턴·출처 둘 다 부재
+        # 단문에서만 검사 (긴 문장에 흔히 본문)
+        has_id = bool(kp.find_req_id(s))
+        has_source = kp.has_source_rationale(s)
+        # 의무 표현이 있고 ID·출처 모두 없으면 추적 곤란
+        has_obligation = kp.STRONG_OBLIGATION.search(s) is not None
+        missing_trace = has_obligation and not has_id and not has_source
+        res.set("S18", missing_trace, Confidence.MEDIUM if missing_trace else 0.0,
+                "ID/출처 부재 + 의무 표현" if missing_trace else "")
+
+        # S19 Constraint-category-unclear — 제약 표현 있으나 카테고리 분류 어려움
+        # 의무 표현 + 제약 키워드 있는데 NCS 카테고리 매칭 0 또는 1
+        cats = kp.classify_constraint_category(s)
+        # 의무·제약 키워드만 추정 (불완전): "제약", "준수", "한정"
+        has_constraint_signal = bool(re.search(r'(제약|제한|준수|한정|허용|금지)', s))
+        constraint_unclear = (has_constraint_signal and len(cats) == 0)
+        res.set("S19", constraint_unclear, Confidence.LOW if constraint_unclear else 0.0,
+                "제약 신호 + 카테고리 미분류" if constraint_unclear else
+                (f"[cat:{'|'.join(cats)}]" if cats else ""))
+
         return res

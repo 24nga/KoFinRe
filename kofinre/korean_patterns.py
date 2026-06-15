@@ -471,6 +471,133 @@ def has_pronoun_ambiguity(sentence: str) -> bool:
 
 
 # ────────────────────────────────────────────────────────────
+# L. v2.8 신규 smell — CMMI/NCS 기반 (S16~S19)
+# ────────────────────────────────────────────────────────────
+
+# L1. S16 Necessity-unclear — 필요성 불명확 (CMMI REQM Necessary)
+NECESSITY_RED_FLAGS = re.compile(
+    r'(?:'
+    # 주관적·선호 표현
+    r'선호하는|선호도|마음에\s*드는|즐겨\s*쓰는|원하는\s*대로'
+    # 강제·임의
+    r'|강제로\s*(?:사용|적용)|임의로\s*(?:정한|정의)|독단적'
+    # 개발팀 선호 강요
+    r'|개발(?:팀|자)이\s*(?:선호|결정|정한)'
+    r'|운영(?:팀|자)이\s*(?:선호|결정|정한)'
+    r'|특정\s*담당자가\s*(?:선호|지정)'
+    r')'
+)
+
+
+# L2. S17 Feasibility-concern — 실현 불가·극단 (CMMI RD Feasible)
+INFEASIBLE_ABSOLUTE = re.compile(
+    r'(?:'
+    # 100% 절대 표현
+    r'100\s*%\s*(?:가용|정확|성공|완벽|보장|만족|동작|처리|적용)'
+    r'|100\s*프로\s*(?:가용|정확|완벽)'
+    # 0초·무한
+    r'|0\s*초\s*(?:이내|응답|처리|소요)'
+    r'|무한대|무한정|영구\s*보장'
+    # 극단 형용사
+    r'|완벽한\s*(?:보안|보장|정확|시스템|처리)'
+    r'|절대적\s*(?:안전|보안|보장)'
+    # 5 9s 이상 가용성
+    r'|99\.99{3,}\s*%'
+    # 장애·오류 0건
+    r'|장애\s*(?:발생\s*)?0(?:건|회)?|오류\s*(?:발생\s*)?0(?:건|회)?'
+    r'|결함\s*(?:0|없는)\s*(?:상태|시스템)'
+    r')'
+)
+
+
+# L3. S18 Missing-traceability-id — 고유 ID·출처 부재 (CMMI REQM Traceable)
+# REQ-ID 패턴: BIZ-FR-001, ACCT-FR-115, COMP-CR-020 등
+REQ_ID_PATTERN = re.compile(
+    r'\b[A-Z]{2,5}[\-_][A-Z]{2,5}[\-_]\d{3,5}\b'  # FUNC-AUTH-001 등
+    r'|\b(?:REQ|FR|NFR|FUNC|SR|UR|BR|CR)[\-_]\d{3,5}\b'
+)
+
+# 출처·근거 명시 표현
+SOURCE_RATIONALE = re.compile(
+    r'(?:'
+    r'출처\s*[:：]|근거\s*[:：]|참조\s*[:：]'
+    r'|에\s*따라|에\s*의(?:거|해)|에\s*근거'
+    r'|기준으로\s*함|기준\s*문서'
+    r'|규정\s*제\s*\d+조|법\s*제\s*\d+조'
+    r')'
+)
+
+
+# L4. S19 Constraint category dictionaries (NCS 5 분류)
+CONSTRAINT_TECH = {
+    'OS','운영체제','플랫폼','프레임워크','서버','장비','버전',
+    'RHEL','Red Hat','Linux','Windows','Unix','AIX','Solaris',
+    'JDK','JRE','파이썬','Python','Node.js','Tomcat','WebLogic','웹로직',
+    '데이터센터','네트워크 장비','방화벽','스위치','라우터',
+}
+CONSTRAINT_BIZ = {
+    '예산','일정','마일스톤','오픈일','마감','한도','상한',
+    '초과할 수 없','이내로','이전 오픈','이후 오픈','단계별 일정',
+    '인력','자원','조직 정책','부서 정책','내규','내부 규정',
+}
+CONSTRAINT_COMP = {
+    '개인정보','PII','GDPR','개인정보보호법',
+    '보안 규정','법령','감독규정','전자금융감독규정','금융감독원',
+    '신용정보법','전자서명법','정보통신망법','전자상거래법',
+    '국제 표준','ISO 표준','PCI-DSS','HIPAA','SOX',
+    # 주: '준수' 단독은 너무 일반적이라 제외 — 구체 명사와 함께만 매칭
+}
+CONSTRAINT_OPS = {
+    '24시간','365일','무중단','정기 점검','정기점검','운영 시간','운영시간',
+    '데이터센터','DR','이중화','연동','기존 시스템','레거시',
+    '배포 윈도우','메인터넌스','다운타임',
+}
+CONSTRAINT_SEC = {
+    'MFA','다중 인증','다중인증','2FA','OTP','생체 인증',
+    '암호화','AES','AES-256','RSA','SHA-256','TLS','SSL',
+    '감사 로그','감사로그','접근통제','접근 통제','권한 분리','RBAC','ABAC',
+    '안전 무결성','SIL','보안 등급','기밀 등급',
+}
+
+
+# ────────────────────────────────────────────────────────────
+# v2.8 헬퍼 함수
+# ────────────────────────────────────────────────────────────
+
+def has_necessity_red_flag(sentence: str) -> tuple:
+    """S16 필요성 불명확 — 검출 시 (True, 매칭어)."""
+    m = NECESSITY_RED_FLAGS.search(sentence)
+    return (m is not None, m.group() if m else None)
+
+
+def has_infeasible_absolute(sentence: str) -> tuple:
+    """S17 실현 불가 — 검출 시 (True, 매칭어)."""
+    m = INFEASIBLE_ABSOLUTE.search(sentence)
+    return (m is not None, m.group() if m else None)
+
+
+def find_req_id(text: str) -> list:
+    """본문 또는 메타에서 REQ-ID 패턴 추출."""
+    return REQ_ID_PATTERN.findall(text)
+
+
+def has_source_rationale(sentence: str) -> bool:
+    """출처·근거 명시 여부."""
+    return SOURCE_RATIONALE.search(sentence) is not None
+
+
+def classify_constraint_category(sentence: str) -> list:
+    """문장에 매칭되는 NCS 제약 카테고리 반환 (다중 가능)."""
+    cats = []
+    if any(k in sentence for k in CONSTRAINT_TECH): cats.append('TECH')
+    if any(k in sentence for k in CONSTRAINT_BIZ): cats.append('BIZ')
+    if any(k in sentence for k in CONSTRAINT_COMP): cats.append('COMP')
+    if any(k in sentence for k in CONSTRAINT_OPS): cats.append('OPS')
+    if any(k in sentence for k in CONSTRAINT_SEC): cats.append('SEC')
+    return cats
+
+
+# ────────────────────────────────────────────────────────────
 # 헬퍼 함수
 # ────────────────────────────────────────────────────────────
 

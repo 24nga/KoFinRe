@@ -66,7 +66,9 @@ class ChunkDetector(BaseDetector):
             res.set("S5", False)
 
         # 나머지는 chunk로는 검출 어려움
-        for c in ["S1","S3","S4","S6","S7","S8","S9","S10","S11","S12","S13","S14","S15"]:
+        for c in ["S1","S3","S4","S6","S7","S8","S9","S10",
+                  "S11","S12","S13","S14","S15",
+                  "S16","S17","S18","S19"]:
             res.set(c, False)
 
         res.meta = {

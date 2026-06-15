@@ -9,7 +9,8 @@ from pathlib import Path
 
 DOCS_ORDER = [
     'PAPER_FINAL.md',           # MECE 최종 논문
-    'STANDARDS_COMPARISON.md',  # 요구공학 표준 갭 분석 (NEW)
+    'CMMI_NCS_COMPARISON.md',   # CMMI/NCS 분석 (NEW v2.8)
+    'STANDARDS_COMPARISON.md',  # IEEE/ISO/INCOSE/EARS 갭 분석
     'JOURNEY.md',               # 프로젝트 여정
     'PAPER_DRAFT.md',           # 초안 (참고)
     'FRAMEWORK_GAP_ANALYSIS.md',

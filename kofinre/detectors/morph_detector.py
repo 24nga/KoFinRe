@@ -184,7 +184,9 @@ class MorphDetector(BaseDetector):
             res.set("S9", False)
 
         # ─── 나머지는 morph 단독 검출 어려움 ───
-        for c in ["S1","S3","S6","S7","S8","S10","S11","S12","S13","S14","S15"]:
+        for c in ["S1","S3","S6","S7","S8","S10",
+                  "S11","S12","S13","S14","S15",
+                  "S16","S17","S18","S19"]:
             res.set(c, False)
 
         # 메타 — 번역체·이중부정 등 추가 신호

@@ -74,7 +74,7 @@ class LLMDetector(BaseDetector):
 
         # LLM 비활성 시 모두 false
         if self.llm_caller is None:
-            for c in ["S1","S2","S3","S4","S5","S6","S7","S8","S9","S10","S11","S12","S13","S14","S15"]:
+            for c in ["S1","S2","S3","S4","S5","S6","S7","S8","S9","S10","S11","S12","S13","S14","S15","S16","S17","S18","S19"]:
                 res.set(c, False)
             res.meta["llm_disabled"] = True
             return res
@@ -92,7 +92,7 @@ class LLMDetector(BaseDetector):
                 json.dump(self._cache, open(self.cache_path, 'w', encoding='utf-8'),
                           ensure_ascii=False, indent=2)
         except Exception as e:
-            for c in ["S1","S2","S3","S4","S5","S6","S7","S8","S9","S10","S11","S12","S13","S14","S15"]:
+            for c in ["S1","S2","S3","S4","S5","S6","S7","S8","S9","S10","S11","S12","S13","S14","S15","S16","S17","S18","S19"]:
                 res.set(c, False)
             res.meta["error"] = str(e)
 
