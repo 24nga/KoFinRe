@@ -13,6 +13,36 @@
 
 ---
 
+## [2.6.1] — 2026-06-12 — 요구공학 표준 갭 분석 + S11~S18 신규 smell 후보 도출
+
+### Added
+
+- **`docs/STANDARDS_COMPARISON.md`** — IEEE 830 / ISO 29148 / INCOSE / EARS ↔ KoFinRe S1~S10 갭 분석
+  - 표준별 정의 기준 정리 (8/9/11/5 = 33 기준)
+  - S1~S10 매핑 매트릭스 — 충족 5종 / 부분 4종 / 부재 10종
+  - 갭 우선순위 (P0~P4)
+  - **신규 smell 후보 8종 (S11~S18)** 도출:
+    - S11 Implementation-bias (구현 편향) — P0
+    - S12 Negative-statement (부정문) — P0
+    - S13 Speculation (추측·조건부) — P1
+    - S14 Missing-actor-persona (이해관계자 부재) — P1
+    - S15 Pronoun-ambiguity (지시어 모호) — P2
+    - S16 Modifiability (수정가능성) — P2
+    - S17 Consistency (요구사항 간 일관성) — P3 (문서 단위)
+    - S18 EARS-non-conformance (양식 권장) — P4
+  - 검출 사전·정규식 구현 가이드 (S11~S15)
+- README.md / scripts/build_pdf_bundle.py: STANDARDS_COMPARISON 링크 추가
+
+### 핵심 발견
+
+- 현재 KoFinRe S1~S10: 표준 18+ 기준의 **약 28%** 커버
+- S11~S18 추가 시 **78% 커버** (+50pp)
+- IEEE 830 8 특성: 5/8 → 7/8
+- ISO 29148 9 특성: 5/9 → 8/9
+- INCOSE 11 결함: 4/11 → 9/11
+
+---
+
 ## [2.6.0] — 2026-06-12 — 한국어 특화 고도화 (korean_patterns 모듈)
 
 ### Added

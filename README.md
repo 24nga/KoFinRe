@@ -21,6 +21,7 @@
 | **Stage 5** 교정 | smell 검출 요구사항 | LLM 6원칙 교정 + 재평가 |
 
 > **논문 최종본 (MECE)**: [`docs/PAPER_FINAL.md`](./docs/PAPER_FINAL.md) 📄
+> **요구공학 표준 ↔ KoFinRe 갭 분석**: [`docs/STANDARDS_COMPARISON.md`](./docs/STANDARDS_COMPARISON.md) 📊
 > **전체 프로젝트 여정 (v1.0 → v2.5)**: [`docs/JOURNEY.md`](./docs/JOURNEY.md) ⭐
 > **웹 평가기 (XLSX 업로드)**: [`web/index.html`](./web/index.html) 🌐
 

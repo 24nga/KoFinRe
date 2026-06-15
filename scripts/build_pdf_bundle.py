@@ -8,9 +8,10 @@ from pathlib import Path
 
 
 DOCS_ORDER = [
-    'PAPER_FINAL.md',       # MECE 최종 논문
-    'JOURNEY.md',           # 프로젝트 여정
-    'PAPER_DRAFT.md',       # 초안 (참고)
+    'PAPER_FINAL.md',           # MECE 최종 논문
+    'STANDARDS_COMPARISON.md',  # 요구공학 표준 갭 분석 (NEW)
+    'JOURNEY.md',               # 프로젝트 여정
+    'PAPER_DRAFT.md',           # 초안 (참고)
     'FRAMEWORK_GAP_ANALYSIS.md',
     'EXTRACTION_RULES.md',
     'PASKA_KOREAN_ADAPTATION.md',
