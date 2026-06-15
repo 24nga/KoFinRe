@@ -9,7 +9,8 @@ from typing import List, Dict, Any, Literal
 from .detectors.base import DetectorResult
 
 
-SMELL_CODES = ["S1","S2","S3","S4","S5","S6","S7","S8","S9","S10"]
+SMELL_CODES = ["S1","S2","S3","S4","S5","S6","S7","S8","S9","S10",
+               "S11","S12","S13","S14","S15"]
 
 
 def vote_majority(results: List[DetectorResult], code: str) -> Dict[str, Any]:

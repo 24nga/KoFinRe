@@ -330,6 +330,147 @@ QUALITATIVE_NO_METRIC = re.compile(
 
 
 # ────────────────────────────────────────────────────────────
+# K. v2.7 신규 smell (ISO 29148 갭 보강)
+# ────────────────────────────────────────────────────────────
+
+# K1. S11 Implementation-bias — 구현 편향 (ISO Implementation-free 위반)
+IMPL_BIAS_DB = {
+    'Oracle','오라클','MySQL','PostgreSQL','MS-SQL','MSSQL','MS SQL','MariaDB',
+    'MongoDB','Redis','Cassandra','DB2','Sybase','Tibero','티베로','CUBRID',
+    'Couchbase','DynamoDB',
+}
+IMPL_BIAS_FRAMEWORK = {
+    'Spring','Spring Boot','Django','Flask','FastAPI','React','Vue','Angular',
+    'Express','jQuery','Bootstrap','Tailwind','Next.js','Nuxt','Rails',
+    'ASP.NET','.NET','Laravel','Symfony',
+}
+IMPL_BIAS_LANGUAGE = {
+    'Java','Python','C#','Go','Rust','JavaScript','TypeScript','Kotlin',
+    'Swift','PHP','Ruby','Scala','C++',
+}
+IMPL_BIAS_INFRA = {
+    'AWS','Azure','GCP','Kubernetes','K8s','Docker','Jenkins','GitLab CI',
+    'Tomcat','WebLogic','웹로직','JBoss','WildFly','Apache','Nginx',
+}
+
+# 구현 명시 패턴 — "Java로 개발", "Oracle로 구축" 등
+IMPL_BIAS_USAGE = re.compile(
+    r'(?:'
+    r'(?:로|으로|을|를)\s*(?:사용|개발|구축|운영|구현|적용|선택|채택|이용)'
+    r'|(?:사용|개발|구축|이용)\s*(?:한다|해야|하여야|할 것)'
+    r'|(?:구축|개발)\s*환경\s*[:：]'
+    r')'
+)
+
+
+# K2. S12 Negative-statement — 부정문 (능동·긍정 권장)
+NEGATIVE_STATEMENT = re.compile(
+    r'(?:'
+    r'하지\s*않아야\s*(?:한다|함)'
+    r'|하지\s*않도록\s*(?:한다|함|해야)'
+    r'|되지\s*않아야\s*(?:한다|함)'
+    r'|지원하지\s*않(?:는다|아야|도록)'
+    r'|허용하지\s*않(?:는다|아야|도록)'
+    r'|사용할\s*수\s*없(?:다|어야|도록)'
+    r'|제공하지\s*않(?:는다|아야|도록)'
+    r'|반영하지\s*않(?:는다|아야|도록)'
+    r'|적용하지\s*않(?:는다|아야|도록)'
+    r'|노출하지\s*않(?:는다|아야|도록)'
+    r')'
+)
+
+
+# K3. S13 Speculation — 추측·조건부
+SPECULATION_TERMS = {
+    '가능하면','가능한 경우','가능한 한','필요시','필요한 경우','여건이 되면',
+    '여유가 있으면','상황에 따라','경우에 따라','선택적으로','선택사항',
+    '추후 검토','추후 결정','추후 협의','추후 정의','협의 후','판단에 따라',
+    '재량으로','권한에 따라','요청 시','요청에 따라','요청이 있을 시',
+    'if possible','as appropriate','as needed',
+}
+
+
+# K4. S14 Missing-actor-persona — 이해관계자 부재
+# 의무 표현 + 시스템 주체 명시 + 이해관계자 명시 부재
+STAKEHOLDERS = re.compile(
+    r'(?:'
+    r'사용자|이용자|회원|가입자|고객|소비자|민원인'
+    r'|관리자|운영자|담당자|책임자|개발자|보안\s*담당'
+    r'|발주\s*기관|발주처|발주자|수요\s*기관|수요처'
+    r'|제안사|수행사|용역사|위탁사|수탁사|컨소시엄'
+    r'|이해\s*관계자|관계자|당사자'
+    r'|외부\s*기관|관계\s*기관|연계\s*기관'
+    r')'
+)
+
+# 시스템·기능만 있고 이해관계자 부재 (보조 검사)
+SYSTEM_ONLY = re.compile(
+    r'^(?:본\s*)?(?:시스템|모듈|서비스|애플리케이션|기능)[가-힣]*\s*(?:은|는)'
+)
+
+
+# K5. S15 Pronoun-ambiguity — 지시어·대명사 모호
+# 한국어 특화: "해당", "본 항목", "동 시스템" 등
+DEMONSTRATIVE_PRONOUN = re.compile(
+    r'(?:'
+    r'해당\s+(?:시스템|기능|항목|단계|과정|업무|화면|메뉴|데이터)'
+    r'|본\s+(?:항목|요건|기능|단계|과정)'
+    r'|동\s+(?:시스템|기능|항목|업무)'
+    r'|상기\s+(?:내용|항목|기능|요건|사항)'
+    r'|위\s+(?:내용|항목|기능|요건|사항)'
+    r'|이\s+(?:기능|항목|단계|과정|업무|시스템)'
+    r'|그\s+(?:기능|항목|단계|과정|업무|시스템)'
+    r')'
+)
+
+
+# ────────────────────────────────────────────────────────────
+# 신규 헬퍼 함수
+# ────────────────────────────────────────────────────────────
+
+def has_implementation_bias(sentence: str) -> tuple:
+    """구현 편향 검출 — (검출 여부, 카테고리, 매칭 단어)."""
+    for term in IMPL_BIAS_DB:
+        if term in sentence and IMPL_BIAS_USAGE.search(sentence):
+            return True, 'database', term
+    for term in IMPL_BIAS_FRAMEWORK:
+        if term in sentence and IMPL_BIAS_USAGE.search(sentence):
+            return True, 'framework', term
+    for term in IMPL_BIAS_LANGUAGE:
+        if term in sentence and IMPL_BIAS_USAGE.search(sentence):
+            return True, 'language', term
+    for term in IMPL_BIAS_INFRA:
+        if term in sentence and IMPL_BIAS_USAGE.search(sentence):
+            return True, 'infra', term
+    return False, None, None
+
+
+def has_negative_statement(sentence: str) -> bool:
+    return NEGATIVE_STATEMENT.search(sentence) is not None
+
+
+def find_speculation(sentence: str) -> list:
+    return [t for t in SPECULATION_TERMS if t in sentence]
+
+
+def missing_stakeholder(sentence: str) -> bool:
+    """의무 표현이 있는데 이해관계자(사용자·고객·관리자 등) 명시 부재.
+
+    S5(주체 누락)와 차이:
+    - S5: 의무 표현의 '수행 주체' 부재 (시스템도 명시 없음)
+    - S14: 시스템은 있지만 그 행위의 '대상·수혜자' 부재
+    """
+    has_obligation = STRONG_OBLIGATION.search(sentence) is not None
+    has_stakeholder = STAKEHOLDERS.search(sentence) is not None
+    has_system_only = SYSTEM_ONLY.match(sentence) is not None
+    return has_obligation and has_system_only and not has_stakeholder
+
+
+def has_pronoun_ambiguity(sentence: str) -> bool:
+    return DEMONSTRATIVE_PRONOUN.search(sentence) is not None
+
+
+# ────────────────────────────────────────────────────────────
 # 헬퍼 함수
 # ────────────────────────────────────────────────────────────
 

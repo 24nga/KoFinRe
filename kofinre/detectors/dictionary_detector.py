@@ -53,7 +53,8 @@ class DictionaryDetector(BaseDetector):
             res.set("S6", False)
 
         # 나머지는 직접 검출 안 함 (signal만 meta에 저장)
-        for c in ["S1","S2","S3","S4","S5","S7","S8","S9","S10"]:
+        for c in ["S1","S2","S3","S4","S5","S7","S8","S9","S10",
+                  "S11","S12","S13","S14","S15"]:
             res.set(c, False)
 
         res.meta = {

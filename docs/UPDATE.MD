@@ -13,6 +13,57 @@
 
 ---
 
+## [2.7.0] — 2026-06-12 — Smell taxonomy 10 → 15종 확장 (ISO 29148 기반)
+
+### 동기
+
+사용자 제공 ISO 29148 요구사항 작성 원칙 표(9 quality attributes + 문장 수준 6 규칙 + 8 제약 카테고리)를 참고하여 STANDARDS_COMPARISON.md 에서 도출했던 신규 smell 후보 중 P0~P1 5종을 즉시 구현.
+
+### Added
+
+- **Smell taxonomy 확장: 10종 → 15종**
+
+  | 코드 | 이름 | ISO 29148 매핑 | 우선순위 |
+  |---|---|---|---|
+  | **S11** | 구현편향 | Implementation-free 위반 | P0 |
+  | **S12** | 부정문 | 능동·긍정 원칙 위반 | P0 |
+  | **S13** | 추측표현 | Necessary·Clarity 위반 | P1 |
+  | **S14** | 수혜자누락 | Complete (Persona) | P1 |
+  | **S15** | 지시어모호 | Unambiguous (Pronoun) | P2 |
+
+- **`kofinre/korean_patterns.py`** — 신규 사전 5종
+  - `IMPL_BIAS_DB` / `IMPL_BIAS_FRAMEWORK` / `IMPL_BIAS_LANGUAGE` / `IMPL_BIAS_INFRA`
+    — Oracle, Java, Spring, AWS 등 60+ 식별자
+  - `NEGATIVE_STATEMENT` 정규식 — "하지 않아야 한다" / "지원하지 않는다" 류
+  - `SPECULATION_TERMS` — "가능하면", "필요시", "추후 협의" 등
+  - `STAKEHOLDERS` 정규식 + `SYSTEM_ONLY` — 시스템만 명시한 케이스 검출
+  - `DEMONSTRATIVE_PRONOUN` — "해당 시스템", "본 항목", "상기 내용" 등 한국어 지시어
+
+- **헬퍼 함수 5종** — `has_implementation_bias`, `has_negative_statement`, `find_speculation`, `missing_stakeholder`, `has_pronoun_ambiguity`
+- **`tests/test_new_smells.py`** — 16 단위 테스트 (16/16 통과)
+- **`kofinre/__init__.py`** — `SMELL_NAMES` / `SMELL_NAMES_KO` 5종 추가
+
+### Changed
+
+- `kofinre/ensemble.py`: SMELL_CODES 15개로 확장
+- `kofinre/detectors/regex_detector.py`: S11~S15 검출 로직 추가
+- `kofinre/detectors/morph_detector.py`, `chunk_detector.py`, `dictionary_detector.py`, `llm_detector.py`: S11~S15 false 초기화 (앙상블 안전)
+
+### 검증
+
+- 신규 16/16 단위 테스트 통과
+- 기존 11/12 유지 (XYZW edge case 1건)
+- D4 익명 데이터: 신규 S11~S15 검출 0건 (정상 — 익명화로 기업 식별자·부정문 잔재 없음)
+
+### 표준 커버리지 (STANDARDS_COMPARISON.md 갱신)
+
+- v2.6 (S1~S10): **28%** 커버
+- v2.7 (S1~S15): **약 55%** 커버 (+27 pp)
+  - INCOSE 11 결함: 4/11 → **8/11**
+  - ISO 29148 9 특성: 5/9 → 7/9
+
+---
+
 ## [2.6.1] — 2026-06-12 — 요구공학 표준 갭 분석 + S11~S18 신규 smell 후보 도출
 
 ### Added

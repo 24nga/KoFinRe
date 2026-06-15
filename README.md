@@ -201,8 +201,10 @@ v2.x 에서 4 방식 baseline (Rule/NLP/LLM/Ensemble) 비교 자동화 예정.
 | v2.4 | ✓ | Anthropic LLM 어댑터, 문서 PDF 번들, R1 시뮬 평가 |
 | v2.5 | ✓ | 휴리스틱 교정 + 4방식 baseline 비교 — Rule-only Macro 0.28 |
 | v2.5.1 | ✓ | 웹 HTML 평가기, MECE 논문 PAPER_FINAL.md |
-| **v2.6** | **현재** | **한국어 특화 고도화** — korean_patterns 모듈 (종결5분류/격조사/번역체/이중부정) |
-| v2.7 | 예정 | confidence_weighted ensemble + 실제 평가자 데이터셋 |
+| v2.6 | ✓ | 한국어 특화 고도화 — korean_patterns 모듈 (종결5분류/격조사/번역체) |
+| v2.6.1 | ✓ | ISO 29148 갭 분석 — STANDARDS_COMPARISON.md |
+| **v2.7** | **현재** | **Smell 10 → 15종** (S11~S15: 구현편향/부정문/추측/수혜자/지시어) |
+| v2.8 | 예정 | S16~S18 (Modifiability/Consistency/EARS) |
 | v2.3 | 예정 | 200건 gold label, baseline 비교 자동화 |
 
 ---

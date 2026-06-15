@@ -199,4 +199,31 @@ class RegexDetector(BaseDetector):
         res.set("S10", unverifiable, Confidence.MEDIUM if unverifiable else 0.0,
                 kp.QUALITATIVE_NO_METRIC.search(s).group() if unverifiable else "")
 
+        # ─── v2.7 신규 smell S11~S15 ───
+
+        # S11 Implementation-bias — 특정 기술·벤더 명시
+        impl_detected, impl_cat, impl_term = kp.has_implementation_bias(s)
+        res.set("S11", impl_detected, Confidence.HIGH if impl_detected else 0.0,
+                f"{impl_cat}:{impl_term}" if impl_detected else "")
+
+        # S12 Negative-statement — "하지 않아야 한다" 부정문
+        is_negative = kp.has_negative_statement(s)
+        res.set("S12", is_negative, Confidence.HIGH if is_negative else 0.0,
+                kp.NEGATIVE_STATEMENT.search(s).group() if is_negative else "")
+
+        # S13 Speculation — "가능하면", "필요시"
+        spec_hits = kp.find_speculation(s)
+        res.set("S13", bool(spec_hits), Confidence.HIGH if spec_hits else 0.0,
+                "|".join(spec_hits) if spec_hits else "")
+
+        # S14 Missing-stakeholder — 시스템만 명시, 이해관계자 부재
+        missing_persona = kp.missing_stakeholder(s)
+        res.set("S14", missing_persona, Confidence.MEDIUM if missing_persona else 0.0,
+                "시스템 단독 + 수혜자 부재" if missing_persona else "")
+
+        # S15 Pronoun-ambiguity — "해당", "본 항목" 지시어
+        pronoun_amb = kp.has_pronoun_ambiguity(s)
+        res.set("S15", pronoun_amb, Confidence.MEDIUM if pronoun_amb else 0.0,
+                kp.DEMONSTRATIVE_PRONOUN.search(s).group() if pronoun_amb else "")
+
         return res
