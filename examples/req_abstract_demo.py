@@ -1,4 +1,4 @@
-"""REQ_abstract.csv 형식 입력 → 10종 smell 평가 + Excel 리포트.
+"""REQ_abstract.csv 형식 입력 → 19종 smell 평가 + Excel 리포트 (v2.8).
 
 Usage:
     python examples/req_abstract_demo.py \

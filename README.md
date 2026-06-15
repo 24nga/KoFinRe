@@ -4,7 +4,9 @@
 >
 > 논문 [`KoFinRe-QA Framework`](./docs/PAPER_DRAFT.md) 기반 / Paska smell taxonomy + IEEE 830 / ISO 29148 참조
 
-[![version](https://img.shields.io/badge/version-2.1.0-blue)](./docs/UPDATE.MD)
+[![version](https://img.shields.io/badge/version-2.8.0-blue)](./docs/UPDATE.MD)
+[![smells](https://img.shields.io/badge/smells-19-orange)](./kofinre/smell_taxonomy.yaml)
+[![standards](https://img.shields.io/badge/standards-IEEE%20830%20%2F%20ISO%2029148%20%2F%20INCOSE%20%2F%20EARS%20%2F%20CMMI%20%2F%20NCS-success)](./docs/CMMI_NCS_COMPARISON.md)
 [![python](https://img.shields.io/badge/python-3.10+-blue)](pyproject.toml)
 [![license](https://img.shields.io/badge/license-MIT-green)](#license)
 
@@ -15,7 +17,7 @@
 | 단계 | 입력 | 출력 |
 |---|---|---|
 | **Stage 1** 추출 | RFP 공고 (HTML/HWP/PDF/DOCX/RTF) | 문장 후보 + 요구사항 후보 CSV |
-| **Stage 2** 정의 | — | 10종 한국어 smell taxonomy |
+| **Stage 2** 정의 | — | **19종** 한국어 smell taxonomy (Paska + IEEE 830 / ISO 29148 / INCOSE / EARS / CMMI / NCS) |
 | **Stage 3** 탐지 | 요구사항 후보 | 5 detector + 앙상블 라벨 |
 | **Stage 4** 평가 | 라벨 + (선택) gold label | Precision/Recall/F1/Kappa + 리포트 6종 |
 | **Stage 5** 교정 | smell 검출 요구사항 | LLM 6원칙 교정 + 재평가 |
@@ -28,7 +30,7 @@
 
 ---
 
-## 디렉토리 구조 (v2.1)
+## 디렉토리 구조 (v2.8)
 
 ```
 KoFinRe/
@@ -36,52 +38,66 @@ KoFinRe/
 ├── pyproject.toml                ← 패키지 메타·의존성
 ├── requirements.txt              ← 최소 의존성
 │
-├── docs/                         ← 모든 문서 한 곳에
-│   ├── UPDATE.MD                 ← 변경 이력 (Keep a Changelog)
+├── docs/                         ← 활성 문서 (v2.8)
+│   ├── PAPER_FINAL.md            ← ⭐ MECE 학술 최종본 (19종)
+│   ├── CMMI_NCS_COMPARISON.md    ← CMMI 9 원칙 + NCS 5 카테고리 (v2.8)
+│   ├── JOURNEY.md                ← 전체 여정 v1.0 → v2.8 (13단계)
+│   ├── UPDATE.MD                 ← Changelog (v1.0~v2.8)
 │   ├── EXTRACTION_RULES.md       ← 추출·필터 규칙
-│   ├── FRAMEWORK_GAP_ANALYSIS.md ← 논문 vs 구현 갭
 │   ├── PASKA_KOREAN_ADAPTATION.md← Paska 원본 대비 변경
-│   └── PAPER_DRAFT.md            ← 학술용 정리본
+│   └── IMPROVEMENT_RECOMMENDATIONS.md ← 작성자·도구·프로세스 권고
+│
+├── old/                          ← 📜 시점별 historical 보관 (NEW v2.8)
+│   ├── README.md                 ← 보관 안내 + 후속 매핑
+│   ├── PAPER_DRAFT.md            ← v2.1 시점 초안 (10종)
+│   ├── FRAMEWORK_GAP_ANALYSIS.md ← v2.0 시점 갭 분석
+│   └── STANDARDS_COMPARISON.md   ← v2.7 시점 IEEE/ISO/INCOSE/EARS 갭
 │
 ├── kofinre/                      ← 핵심 패키지
-│   ├── __init__.py
-│   ├── smell_taxonomy.yaml       ← 10종 smell 정식 정의
+│   ├── __init__.py               ← __version__ = "2.8.0", SMELL_CODES S1~S19
+│   ├── smell_taxonomy.yaml       ← 19종 smell 정식 정의 (S1~S19, v2.8)
+│   ├── korean_patterns.py        ← 한국어 패턴 + CMMI/NCS 사전 (v2.8)
 │   ├── detectors/
 │   │   ├── base.py               ← BaseDetector / DetectorResult / Confidence
-│   │   ├── regex_detector.py     ← S1~S10 전체 정규식
-│   │   ├── morph_detector.py     ← 형태소·종결어미·조사
+│   │   ├── regex_detector.py     ← S1~S19 전체 정규식
+│   │   ├── morph_detector.py     ← 형태소·종결어미·조사 (kiwipiepy)
 │   │   ├── chunk_detector.py     ← 주체-행위-대상 휴리스틱
 │   │   ├── dictionary_detector.py← 금융·도메인 사전
-│   │   └── llm_detector.py       ← LLM 보조 판정 + 캐싱
+│   │   └── llm_detector.py       ← LLM 보조 판정 + 캐싱 (19종 prompt)
 │   ├── extraction/               ← Stage 1
 │   │   ├── signatures.py         ← 파일 시그니처 판별
 │   │   ├── document_extractor.py ← 다포맷 추출기
 │   │   ├── sentence_splitter.py  ← 문장 분리
 │   │   └── requirement_filter.py ← 정밀 필터 + 컷 사유 추적
 │   ├── io/                       ← CSV / Excel 입출력
-│   │   ├── csv_loader.py
-│   │   └── excel_writer.py
+│   ├── llm_adapters/             ← Anthropic Claude 어댑터
 │   ├── ensemble.py               ← rule-priority / majority / weighted voting
 │   ├── metrics.py                ← Detection / Quality / Correction 지표
 │   ├── reporting.py              ← 6 표준 리포트 (md + json)
 │   ├── correction.py             ← Stage 5 LLM 교정 6원칙
+│   ├── correction_heuristic.py   ← 휴리스틱 교정 (S3·S4·S8 + S16~S19 마커)
 │   ├── validation.py             ← Manual Validation + Cohen's kappa
 │   └── pipeline.py               ← 5-stage orchestration
 │
+├── web/                          ← 🌐 브라우저 평가기 (서버 불필요)
+│   ├── index.html                ← 19종 smell 검출 + 마커 (v2.8 동기화)
+│   └── README.md                 ← 사용법
+│
 ├── scripts/                      ← CLI entrypoint
 │   ├── run_extraction.py         ← Stage 1
-│   └── run_detection.py          ← Stage 2-3
+│   ├── run_detection.py          ← Stage 2-3
+│   └── build_pdf_bundle.py       ← 문서 PDF 번들 (v2.8, --include-old 옵션)
 │
 ├── examples/                     ← 사용 예제
-│   ├── basic_usage.py            ← 5문장 데모
-│   └── req_abstract_demo.py      ← REQ_abstract.csv 평가
-│
 ├── tests/                        ← 단위 테스트
 │   ├── test_detectors.py
+│   ├── test_new_smells.py        ← S11~S15 (v2.7)
+│   ├── test_cmmi_smells.py       ← S16~S19 (v2.8) — 18/18 통과
 │   └── test_metrics.py
 │
 ├── data/                         ← 입력 (gitignore — 직접 추가)
 ├── results/                      ← 산출물 (gitignore)
+├── dist/                         ← PDF 번들 출력 (gitignore)
 │
 └── legacy/                       ← v1 스크립트 보관 (마이그레이션 참고용)
 ```
@@ -148,11 +164,13 @@ python -m unittest discover tests
 
 ---
 
-## Smell Taxonomy (10종)
+## Smell Taxonomy (19종, v2.8)
+
+### 핵심 10종 (Paska + 한국 특화) — v1.0~v2.0
 
 | Code | 한국어 | Quality Attribute | 예시 |
 |---|---|---|---|
-| S1 | 복합의무 | Atomicity | 한 문장에 둘 이상 기능 |
+| S1 | 복합의무 | Atomicity / Singular | 한 문장에 둘 이상 기능 |
 | S2 | 불완전 | Completeness | 응답·행위·대상 누락 |
 | S3 | 모호어 | Unambiguity | "적절히, 필요한, 실시간" |
 | S4 | 약한의무 | Verifiability | "~한다 / ~된다" |
@@ -163,7 +181,26 @@ python -m unittest discover tests
 | S9 | 수동표현 | Clarity | "~되어야 한다" |
 | S10 | 검증불가 | Verifiability | "효율적으로" + 측정 기준 부재 |
 
-상세: [`kofinre/smell_taxonomy.yaml`](./kofinre/smell_taxonomy.yaml)
+### 확장 5종 (ISO 29148 / INCOSE / EARS) — v2.7
+
+| Code | 한국어 | 출처 표준 | 예시 |
+|---|---|---|---|
+| S11 | 구현편향 | ISO 29148 Implementation-free | "Java로 구현해야 한다" |
+| S12 | 부정문 | INCOSE Positive form | "X를 지원하지 않아야 한다" |
+| S13 | 추측표현 | INCOSE Speculative | "가능하다면 / 추후 결정" |
+| S14 | 수혜자불명 | EARS / IEEE 830 | "사용자" 명시 없는 의무문 |
+| S15 | 지시어모호 | INCOSE Pronoun | "해당, 상기, 그것" |
+
+### CMMI / NCS 4종 — v2.8 신규
+
+| Code | 한국어 | 출처 표준 | 예시 |
+|---|---|---|---|
+| **S16** | **필요성불명확** | **CMMI REQM Necessary** | "개발팀이 선호하는 폰트를 강제로" |
+| **S17** | **실현불가** | **CMMI RD Feasible** | "100% 가용성", "0초 응답", "완벽한" |
+| **S18** | **추적ID부재** | **CMMI REQM Traceable** | 의무문 + ID/출처 동시 부재 |
+| **S19** | **제약카테고리불명** | **NCS 5 카테고리 (TECH/BIZ/COMP/OPS/SEC)** | "일부 제약" (분류 사전 0개 매칭) |
+
+상세: [`kofinre/smell_taxonomy.yaml`](./kofinre/smell_taxonomy.yaml) · 표준 정렬: [`docs/CMMI_NCS_COMPARISON.md`](./docs/CMMI_NCS_COMPARISON.md) · [`docs/STANDARDS_COMPARISON.md`](./docs/STANDARDS_COMPARISON.md)
 
 ---
 
@@ -206,19 +243,32 @@ v2.x 에서 4 방식 baseline (Rule/NLP/LLM/Ensemble) 비교 자동화 예정.
 | v2.6.1 | ✓ | ISO 29148 갭 분석 — STANDARDS_COMPARISON.md |
 | v2.7 | ✓ | Smell 10 → 15종 (S11~S15: 구현편향/부정문/추측/수혜자/지시어) |
 | **v2.8** | **현재** | **Smell 15 → 19종** (S16~S19: 필요성·실현·추적·제약) — CMMI/NCS 기반 |
-| v2.9 | 예정 | S20 일관성 (의미 임베딩) + EARS 권장 도구 |
-| v2.3 | 예정 | 200건 gold label, baseline 비교 자동화 |
+| v2.9 | 예정 | S20 일관성 (의미 임베딩) → CMMI 9/9 완전 충족 |
+| v3.0 | 예정 | S21 EARS Pattern Advisor → 전체 표준 ~80% |
+| v3.1 | 예정 | 실제 사람 평가자 200건 gold + Cohen's kappa + 진짜 P/R/F1 |
 
 ---
 
 ## 문서 트리
 
+### 활성 문서 (v2.8)
 - 사용법: 이 파일
-- 추출 규칙 상세: [`docs/EXTRACTION_RULES.md`](./docs/EXTRACTION_RULES.md)
+- ⭐ **논문 최종본 (MECE, 19종)**: [`docs/PAPER_FINAL.md`](./docs/PAPER_FINAL.md)
+- **CMMI 9 + NCS 5 표준 정렬**: [`docs/CMMI_NCS_COMPARISON.md`](./docs/CMMI_NCS_COMPARISON.md)
+- **전체 여정 (v1.0 → v2.8)**: [`docs/JOURNEY.md`](./docs/JOURNEY.md)
 - 변경 이력: [`docs/UPDATE.MD`](./docs/UPDATE.MD)
-- 논문 vs 구현 갭: [`docs/FRAMEWORK_GAP_ANALYSIS.md`](./docs/FRAMEWORK_GAP_ANALYSIS.md)
+- 추출 규칙 상세: [`docs/EXTRACTION_RULES.md`](./docs/EXTRACTION_RULES.md)
 - Paska 대비 변경: [`docs/PASKA_KOREAN_ADAPTATION.md`](./docs/PASKA_KOREAN_ADAPTATION.md)
-- 논문용 정리: [`docs/PAPER_DRAFT.md`](./docs/PAPER_DRAFT.md)
+- 작성자·도구·프로세스 권고: [`docs/IMPROVEMENT_RECOMMENDATIONS.md`](./docs/IMPROVEMENT_RECOMMENDATIONS.md)
+- 웹 평가기: [`web/index.html`](./web/index.html) · [`web/README.md`](./web/README.md)
+
+### 시점별 historical (📜 `old/`)
+- 보관 안내: [`old/README.md`](./old/README.md)
+- v2.1 시점 초안 (10종): [`old/PAPER_DRAFT.md`](./old/PAPER_DRAFT.md)
+- v2.0 시점 갭 분석: [`old/FRAMEWORK_GAP_ANALYSIS.md`](./old/FRAMEWORK_GAP_ANALYSIS.md)
+- v2.7 시점 IEEE/ISO/INCOSE/EARS 갭: [`old/STANDARDS_COMPARISON.md`](./old/STANDARDS_COMPARISON.md)
+
+### 레거시
 - v1 스크립트 보관: [`legacy/`](./legacy/)
 
 ## License

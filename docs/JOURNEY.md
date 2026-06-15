@@ -1,13 +1,13 @@
 # KoFinRe Project Journey — 전체 과정 정리
 
 > 한국어 공공금융 RFP 요구사항 품질 자동 평가 도구 KoFinRe의
-> 1.0 → 2.5 전 과정 회고 (2026-06-07 ~ 2026-06-12)
+> 1.0 → 2.8 전 과정 회고 (2026-06-07 ~ 2026-06-15)
 
 ---
 
 ## 0. 한 줄 요약
 
-영문 SRS 평가 도구 **Paska**를 한국어 공공금융 RFP·실기업 정의서 대응으로 어댑테이션하면서, NLP 의존성 제거 → 정규식 → 형태소 분석(kiwipiepy) → LLM 어댑터 → 휴리스틱 교정까지 5단계 진화. 4 데이터셋(D1~D4) 검증, 자동 likely-FP **26% → 3.9%**, RQ3 답 "Rule-only가 한국 RFP 도메인에서 최선" 정량 확인.
+영문 SRS 평가 도구 **Paska**를 한국어 공공금융 RFP·실기업 정의서 대응으로 어댑테이션하면서, NLP 의존성 제거 → 정규식 → 형태소 분석(kiwipiepy) → LLM 어댑터 → 휴리스틱 교정 → **6대 표준 정렬(IEEE 830 / ISO 29148 / INCOSE / EARS / CMMI / NCS)** 까지 진화. 4 데이터셋(D1~D4) 검증, 자동 likely-FP **26% → 3.9%**, Smell **7 → 10 → 15 → 19**, 표준 커버리지 **~20% → ~70%**, RQ3 답 "Rule-only가 한국 RFP 도메인에서 최선" 정량 확인.
 
 ---
 
@@ -28,7 +28,7 @@
 
 ---
 
-## 2. 시간순 여정 (10단계)
+## 2. 시간순 여정 (13단계)
 
 ### Step 1. 데이터 수집 (D1)
 - 12개 공공금융기관 RFP 56건 자동 다운로드
@@ -81,16 +81,45 @@
 - **Rule-only가 최선** (Macro 0.28, Micro 0.84) — NLP·Ensemble은 과검출
 - 한국 RFP 도메인은 휴리스틱이 효율적, NLP 통합 효과 제한적
 
+### Step 11. v2.6 한국어 패턴 고도화 + 표준 갭 분석
+- `kofinre/korean_patterns.py` 모듈 신설 — 종결 5분류 / 격조사 / 번역체 / 부사·접속 등 사전화
+- MorphDetector (kiwipiepy) 정밀 활용, RegexDetector 한국어 특화 확장
+- **`STANDARDS_COMPARISON.md`** (현재 `old/`) — IEEE 830 / ISO 29148 / INCOSE / EARS ↔ S1~S10 매핑
+- 결과: KoFinRe S1~S10은 표준 18+ 기준의 **약 28%** 커버 → 8종 신규 smell 후보 도출
+
+### Step 12. v2.7 Smell 10 → 15 확장 (ISO/INCOSE/EARS)
+- **S11 구현편향** (ISO 29148 Implementation-free)
+- **S12 부정문** (INCOSE Positive form)
+- **S13 추측표현** (INCOSE Speculative)
+- **S14 수혜자불명** (EARS / IEEE 830)
+- **S15 지시어모호** (INCOSE Pronoun)
+- 단위 테스트 16건 신규 — 모두 통과
+- 표준 커버리지: 28% → **55%**
+
+### Step 13. v2.8 Smell 15 → 19 확장 (CMMI + NCS)
+- 사용자가 제공한 **CMMI 9 원칙** + **NCS 5 제약 카테고리** 표 검증·보완 요청
+- `CMMI_NCS_COMPARISON.md` 11-섹션 분석 → 4종 신규 도출
+- **S16 필요성불명확** (CMMI REQM Necessary)
+- **S17 실현불가** (CMMI RD Feasible — 100% 가용성·0초·완벽한 등)
+- **S18 추적ID부재** (CMMI REQM Traceable — 의무문 + ID/출처 동시 부재)
+- **S19 제약카테고리불명** (NCS 5 카테고리 TECH/BIZ/COMP/OPS/SEC 분류 보조)
+- 단위 테스트 18건 신규 — 모두 통과
+- CMMI 5/9 → **8/9**, NCS 0/5 → **5/5**, 전체 커버리지 55% → **~70%**
+- `PAPER_FINAL.md` v2.8 통합본 재작성, smell_taxonomy.yaml v2.0/10 → v2.8/19
+
 ---
 
 ## 3. 핵심 결과
 
 ### 3.1 Smell Taxonomy 진화
 
-| 버전 | Smell 수 | 변화 |
-|---|---:|---|
-| v1.0 | 7 | Paska 9 → 한국 매핑 |
-| v2.0 | **10** | S2 Incomplete, S8 Coord Amb 분리, S10 Unverifiable 신규 |
+| 버전 | Smell 수 | 변화 | 표준 커버리지 |
+|---|---:|---|---:|
+| v1.0 | 7 | Paska 9 → 한국 매핑 | ~20% |
+| v2.0 | **10** | S2 Incomplete, S8 Coord Amb 분리, S10 Unverifiable 신규 | ~28% |
+| v2.6 | 10 | korean_patterns 모듈 (재구조화) | 28% |
+| v2.7 | **15** | S11~S15 (ISO/INCOSE/EARS) | **55%** |
+| **v2.8** | **19** | **S16~S19 (CMMI REQM/RD + NCS 5 카테고리)** | **~70%** |
 
 ### 3.2 Detector 아키텍처 진화
 
@@ -101,6 +130,9 @@
 | v2.3 | morph 본격 (kiwipiepy) | Kiwi C++ 엔진, Java 불필요 |
 | v2.4 | LLM 실 어댑터 (Anthropic) | dry-run fallback |
 | v2.5 | + 휴리스틱 교정 | LLM 없이도 작동 |
+| v2.6 | korean_patterns 모듈화 | 종결·격조사·번역체 사전 |
+| v2.7 | S11~S15 regex 확장 | ISO/INCOSE/EARS 정렬 |
+| **v2.8** | **S16~S19 regex + NCS 사전** | **CMMI REQM/RD + NCS 5 카테고리** |
 
 ### 3.3 데이터셋 4종
 
@@ -190,17 +222,21 @@
 | 단위 테스트 | `tests/` (detectors / metrics) |
 | 레거시 | `legacy/` (v1 보관) |
 
-### 5.2 문서 (6종 + PDF 번들)
+### 5.2 문서 (활성 7종 + PDF 번들 + old 3종)
 
-| 문서 | 페이지 | 용도 |
-|---|---:|---|
-| `PAPER_DRAFT.md` | 학술 정리 11 섹션 | 논문 초안 (RQ1~5 답 정리) |
-| `FRAMEWORK_GAP_ANALYSIS.md` | 갭 분석 | 논문 vs 구현 P0~P4 우선순위 |
-| `EXTRACTION_RULES.md` | 규칙 본문 | 추출·필터·smell 규칙 정의 |
-| `PASKA_KOREAN_ADAPTATION.md` | 비교 | Paska 원본 대비 변경 사항 |
-| `IMPROVEMENT_RECOMMENDATIONS.md` | 3계층 권고 | 작성자·도구·프로세스 가이드 |
-| `UPDATE.MD` | 변경 이력 | v1.0~v2.5 changelog |
-| **PDF 번들** | 2.7 MB | 6 문서 통합 (dist/ 외부) |
+| 위치 | 문서 | 용도 | 시점 |
+|---|---|---|---|
+| `docs/` | `PAPER_FINAL.md` | MECE 학술 최종본 (19종) | **v2.8** |
+| `docs/` | `CMMI_NCS_COMPARISON.md` | CMMI 9 원칙 + NCS 5 카테고리 분석 | v2.8 |
+| `docs/` | `JOURNEY.md` | 본 문서 | v2.8 |
+| `docs/` | `UPDATE.MD` | Changelog | v1.0~v2.8 |
+| `docs/` | `EXTRACTION_RULES.md` | 추출·필터 규칙 | v2.x |
+| `docs/` | `PASKA_KOREAN_ADAPTATION.md` | Paska 원본 대비 | v2.x |
+| `docs/` | `IMPROVEMENT_RECOMMENDATIONS.md` | 3계층 권고 | v2.x |
+| `old/` | `PAPER_DRAFT.md` | 초기 학술 정리본 (10종) | v2.1 시점 |
+| `old/` | `FRAMEWORK_GAP_ANALYSIS.md` | 논문 vs 구현 갭 분석 | v2.0 시점 |
+| `old/` | `STANDARDS_COMPARISON.md` | IEEE/ISO/INCOSE/EARS 갭 (S11~S18 제안) | v2.7 시점 |
+| **PDF 번들** | `dist/KoFinRe_v2.8.pdf` | 활성 문서 통합 | v2.8 |
 
 ### 5.3 데이터셋 (D1~D4)
 
@@ -224,10 +260,10 @@
 ## 6. GitHub 저장소 통계
 
 - **URL**: <https://github.com/24nga/KoFinRe>
-- **Commit**: 9개 (v1.0 → v2.5)
-- **트래킹 파일**: 59
-- **버전 이력**: 1.0 → 1.0.1 → 1.0.2 → 2.0 → 2.1 → 2.1.1 → 2.2 → 2.3 → 2.4 → **2.5**
-- **leak 검사**: 5회 모두 통과 (실기업 식별자 0)
+- **Commit**: 15+개 (v1.0 → v2.8)
+- **트래킹 파일**: 70+
+- **버전 이력**: 1.0 → 1.0.1 → 1.0.2 → 2.0 → 2.1 → 2.1.1 → 2.2 → 2.3 → 2.4 → 2.5 → 2.5.1 → 2.6 → 2.6.1 → 2.7 → **2.8**
+- **leak 검사**: 7회+ 모두 통과 (실기업 식별자 0)
 
 ---
 
@@ -246,7 +282,9 @@
 - 4 데이터셋 모두 한국 금융 도메인 — 타 도메인 일반화 미검증
 - 영문 약어 화이트리스트 edge case 1개 (단위 테스트 1/12 실패)
 
-### 후속 (v2.6+)
+### 후속 (v2.9+)
+- **v2.9 S20 Consistency** — 의미 임베딩 기반 요구사항 간 충돌 탐지 → CMMI 9/9 완전 충족
+- **v3.0 S21 EARS Pattern Advisor** — Ubiquitous/Event/State/Optional/Unwanted 패턴 권장 → 전체 표준 ~80%
 - 실제 사람 평가자 200건 작성 → Cohen's kappa + 진짜 P/R/F1
 - ANTHROPIC_API_KEY 설정 후 Stage 5 LLM 교정 실제 호출
 - confidence_weighted ensemble 시도
@@ -266,7 +304,9 @@
 
 ---
 
-> 본 문서는 본 저장소의 history·UPDATE.MD·PAPER_DRAFT.md 와 함께 봐주세요.
+> 본 문서는 본 저장소의 history·UPDATE.MD·PAPER_FINAL.md 와 함께 봐주세요.
 > 자세한 변경 이력: [`UPDATE.MD`](./UPDATE.MD)
-> 학술 정리: [`PAPER_DRAFT.md`](./PAPER_DRAFT.md)
+> 학술 정리 (v2.8 19종 최종본): [`PAPER_FINAL.md`](./PAPER_FINAL.md)
+> CMMI/NCS 표준 정렬 분석: [`CMMI_NCS_COMPARISON.md`](./CMMI_NCS_COMPARISON.md)
 > 개선 권고: [`IMPROVEMENT_RECOMMENDATIONS.md`](./IMPROVEMENT_RECOMMENDATIONS.md)
+> 시점별 historical 문서: [`../old/`](../old/)

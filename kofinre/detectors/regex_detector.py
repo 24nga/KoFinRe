@@ -1,4 +1,4 @@
-"""Regex-based detector — S1~S10 모두 (정규식·키워드 기반).
+"""Regex-based detector — S1~S19 전체 (정규식·키워드 기반, v2.8).
 
 논문 Stage 3 의 'Regex-based Detector' 역할:
 - 의무 표현, 모호어, 정량부재, 약어 등 명시적 패턴 탐지

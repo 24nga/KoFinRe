@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<title>KoFinRe — 한국어 RFP 요구사항 품질 평가</title>
+<title>KoFinRe v2.8 — 한국어 RFP 요구사항 품질 평가</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
@@ -21,6 +21,7 @@
   }
   header h1 { margin: 0; font-size: 24px; }
   header .subtitle { margin-top: 4px; opacity: 0.9; font-size: 14px; }
+  header .tag-line { margin-top: 6px; opacity: 0.85; font-size: 12px; }
   main { max-width: 1200px; margin: 24px auto; padding: 0 24px; }
   .card {
     background: white;
@@ -103,6 +104,7 @@
     color: white;
     margin: 1px 2px;
   }
+  /* v1.0~v2.0 core 10 */
   .smell-tag.s1 { background: #e74c3c; }
   .smell-tag.s2 { background: #d35400; }
   .smell-tag.s3 { background: #e67e22; }
@@ -113,6 +115,17 @@
   .smell-tag.s8 { background: #2980b9; }
   .smell-tag.s9 { background: #16a085; }
   .smell-tag.s10 { background: #27ae60; }
+  /* v2.7 ISO/INCOSE/EARS 5 */
+  .smell-tag.s11 { background: #34495e; }
+  .smell-tag.s12 { background: #7f8c8d; }
+  .smell-tag.s13 { background: #2c3e50; }
+  .smell-tag.s14 { background: #1abc9c; }
+  .smell-tag.s15 { background: #3498db; }
+  /* v2.8 CMMI/NCS 4 */
+  .smell-tag.s16 { background: #c0392b; border: 2px solid #fff3cd; }
+  .smell-tag.s17 { background: #d35400; border: 2px solid #fff3cd; }
+  .smell-tag.s18 { background: #8e44ad; border: 2px solid #fff3cd; }
+  .smell-tag.s19 { background: #34495e; border: 2px solid #fff3cd; }
   .correction-marker { background: #fff3cd; padding: 1px 4px; border-radius: 3px; color: #856404; font-weight: 600; }
   .hidden { display: none; }
   .info-box {
@@ -137,6 +150,14 @@
     margin-top: 12px;
   }
   .smell-legend > div { display: flex; align-items: center; gap: 6px; }
+  .smell-group-title {
+    grid-column: 1 / -1;
+    font-weight: 600;
+    color: #1F4E79;
+    margin-top: 8px;
+    border-top: 1px solid #e0e6ed;
+    padding-top: 6px;
+  }
   .progress { background: #e0e6ed; border-radius: 4px; height: 8px; margin: 8px 0; overflow: hidden; }
   .progress > div { background: #1F4E79; height: 100%; width: 0%; transition: width 0.3s; }
   footer { text-align: center; padding: 24px; color: #6c757d; font-size: 12px; }
@@ -147,7 +168,8 @@
 
 <header>
   <h1>KoFinRe — 한국어 RFP 요구사항 품질 평가</h1>
-  <div class="subtitle">10종 Smell 자동 검출 + 수정 권고 마커 · 100% 브라우저 처리 (데이터 서버 전송 없음)</div>
+  <div class="subtitle">19종 Smell 자동 검출 + 수정 권고 마커 · 100% 브라우저 처리 (데이터 서버 전송 없음)</div>
+  <div class="tag-line">v2.8 · Paska + IEEE 830 + ISO 29148 + INCOSE + EARS + CMMI REQM/RD + NCS 5 카테고리 정렬</div>
 </header>
 
 <main>
@@ -205,6 +227,7 @@
     <div class="summary-grid" id="summaryGrid"></div>
 
     <div class="smell-legend">
+      <div class="smell-group-title">핵심 10종 (Paska + 한국 특화, v1.0~v2.0)</div>
       <div><span class="smell-tag s1">S1</span> 복합의무</div>
       <div><span class="smell-tag s2">S2</span> 불완전</div>
       <div><span class="smell-tag s3">S3</span> 모호어</div>
@@ -215,6 +238,17 @@
       <div><span class="smell-tag s8">S8</span> 범위모호</div>
       <div><span class="smell-tag s9">S9</span> 수동표현</div>
       <div><span class="smell-tag s10">S10</span> 검증불가</div>
+      <div class="smell-group-title">확장 5종 (ISO 29148 / INCOSE / EARS, v2.7)</div>
+      <div><span class="smell-tag s11">S11</span> 구현편향</div>
+      <div><span class="smell-tag s12">S12</span> 부정문</div>
+      <div><span class="smell-tag s13">S13</span> 추측표현</div>
+      <div><span class="smell-tag s14">S14</span> 수혜자불명</div>
+      <div><span class="smell-tag s15">S15</span> 지시어모호</div>
+      <div class="smell-group-title">CMMI / NCS 4종 (v2.8 신규)</div>
+      <div><span class="smell-tag s16">S16</span> 필요성불명확</div>
+      <div><span class="smell-tag s17">S17</span> 실현불가</div>
+      <div><span class="smell-tag s18">S18</span> 추적ID부재</div>
+      <div><span class="smell-tag s19">S19</span> 제약카테고리불명</div>
     </div>
 
     <div style="margin-top:16px;">
@@ -230,18 +264,24 @@
 </main>
 
 <footer>
-  KoFinRe v2.5 · <a href="https://github.com/24nga/KoFinRe" target="_blank">GitHub</a> · 10종 한국어 smell taxonomy + 수정 권고 마커
+  KoFinRe v2.8 · <a href="https://github.com/24nga/KoFinRe" target="_blank">GitHub</a> · 19종 한국어 smell taxonomy + 수정 권고 마커 · 6대 표준 정렬
 </footer>
 
 <script>
 // =========================================================================
-// KoFinRe Web Engine — RegexDetector + 휴리스틱 교정 JS 포팅
+// KoFinRe Web Engine v2.8 — RegexDetector S1~S19 + 휴리스틱 교정 JS 포팅
 // =========================================================================
 
-const SMELL_CODES = ['S1','S2','S3','S4','S5','S6','S7','S8','S9','S10'];
+const SMELL_CODES = [
+  'S1','S2','S3','S4','S5','S6','S7','S8','S9','S10',
+  'S11','S12','S13','S14','S15',
+  'S16','S17','S18','S19'
+];
 const SMELL_NAMES_KO = {
   S1:'복합의무', S2:'불완전', S3:'모호어', S4:'약한의무', S5:'주체누락',
   S6:'정량부재', S7:'미정의약어', S8:'범위모호', S9:'수동표현', S10:'검증불가',
+  S11:'구현편향', S12:'부정문', S13:'추측표현', S14:'수혜자불명', S15:'지시어모호',
+  S16:'필요성불명확', S17:'실현불가', S18:'추적ID부재', S19:'제약카테고리불명',
 };
 
 const VAGUE_TERMS = [
@@ -275,7 +315,38 @@ const ACRONYM_WHITELIST = new Set([
   'CB','NICE','KCB','DSR','DTI','VIN','CMS','PEP','EDD','KYC','STR','CTR','FATF','KOFIU','AML','PB','RM',
   'AUC','KS','ROC','AES','AES256','ETF','ELS','MLOPS','ERP','SCM','CRM','PMS','ITSM','ITIL',
   'META','PROJECT','CD','CI','CO','KR','KO','DO','OR','OF','BY','NO','ID','VS','PM','AM','PL',
+  'MFA','REQM','RD','CMMI','NCS','GDPR','PII','RHEL','JDK','TLS','SHA','RSA',
 ]);
+
+// v2.7 신규 — 구현편향 / 부정문 / 추측표현 / 수혜자불명 / 지시어모호
+const IMPL_BIAS_RE = /(?:Java|Python|JavaScript|TypeScript|C#|C\+\+|Ruby|PHP|Go|Rust|Kotlin|Swift|Scala)\s*(?:로|기반|언어|을\s*사용)|(?:Oracle|MySQL|PostgreSQL|MariaDB|MongoDB|Redis|MSSQL)\s*(?:DB|데이터베이스|을\s*사용)|(?:Spring|Django|Flask|React|Vue|Angular|Express|Rails|Laravel|\.NET)\s*(?:기반|프레임워크|을\s*사용)/i;
+const NEGATIVE_STMT_RE = /(?:지\s*않아야\s*(?:한다|함)|못\s*해야\s*(?:한다|함)|안\s*된다|불가하여야|허용하지\s*않아야|금지되어야)/;
+const SPECULATIVE_RE = /(?:가능하다면|추후\s*결정|추후\s*확정|필요시|만약|경우에\s*따라|상황에\s*따라|적절히\s*조정|선택적으로|TBD|T\.B\.D|미정)/;
+const PERSONA_TERMS = /(사용자|관리자|운영자|개발자|이용자|고객|발주\s*기관|제안사|수행사|발주자|발주처|기관|담당자|승인자|결재자|상담원|콜센터|민원인|신청인)/;
+const PRONOUN_AMBIG_RE = /(?:^|\s)(해당|상기|동\s+|그것|이것|저것|본\s*건|본\s*요구|위의|아래의)\s*[가-힣A-Za-z]/;
+
+// v2.8 신규 — CMMI/NCS
+const NECESSITY_RED_FLAGS_RE = /(?:선호하는|선호도|마음에\s*드는|강제로\s*(?:사용|적용)|임의로\s*(?:정한|정의|결정)|독단적|개발(?:팀|자)이\s*(?:선호|결정|정한))/;
+const INFEASIBLE_ABSOLUTE_RE = /(?:100\s*%\s*(?:가용|정확|성공|완벽|보장|만족|동작|처리|적용)|99\.99{3,}\s*%|장애\s*(?:발생\s*)?0\s*(?:건|회)?|응답시간\s*0\s*초|완벽한\s*(?:보안|시스템|품질|동작|처리))/;
+const REQ_ID_PATTERN = /\b[A-Z]{2,5}[\-_][A-Z]{2,5}[\-_]\d{3,5}\b|\b(?:REQ|FR|NFR|FUNC|SR|UR|BR|CR)[\-_]\d{3,5}\b/;
+const SOURCE_RATIONALE_RE = /(?:[가-힣]+(?:법|령|규정|규칙|지침|표준|정책|기준|약관|고시|공고|훈령|예규|매뉴얼|가이드)에?\s*(?:따라|의거|기반)|에\s*따라|에\s*의거|에\s*근거|에\s*기반|선행\s*요구|상위\s*요구)/;
+const CONSTRAINT_SIGNAL_RE = /(?:제약|제한|준수|한정|허용|금지)/;
+
+const CONSTRAINT_TECH = ['OS','운영체제','플랫폼','프레임워크','RHEL','Red Hat','Java','Linux','JDK','Spring','Oracle','MySQL','PostgreSQL','Tomcat','Nginx','Apache','클라우드','AWS','Azure','GCP','쿠버네티스','Docker'];
+const CONSTRAINT_BIZ  = ['예산','일정','마일스톤','오픈일','마감','한도','결재선','조직','승인자','발주기관','계약','SOW','RFP단계'];
+const CONSTRAINT_COMP = ['개인정보','PII','GDPR','개인정보보호법','감독규정','정보통신망법','전자금융거래법','신용정보법','외감법','상법','전자서명법'];
+const CONSTRAINT_OPS  = ['24시간','365일','무중단','정기점검','운영시간','SLA','RTO','RPO','휴일','업무시간'];
+const CONSTRAINT_SEC  = ['MFA','다중인증','암호화','AES','SHA','RSA','감사로그','키관리','키 관리','SSO','VPN','TLS','HTTPS','방화벽','IDS','IPS','SIEM','보안관제'];
+
+function classifyConstraintCategory(s) {
+  const cats = [];
+  if (CONSTRAINT_TECH.some(k => s.includes(k))) cats.push('TECH');
+  if (CONSTRAINT_BIZ.some(k => s.includes(k))) cats.push('BIZ');
+  if (CONSTRAINT_COMP.some(k => s.includes(k))) cats.push('COMP');
+  if (CONSTRAINT_OPS.some(k => s.includes(k))) cats.push('OPS');
+  if (CONSTRAINT_SEC.some(k => s.includes(k))) cats.push('SEC');
+  return cats;
+}
 
 function collectUndefinedAcronyms(allText) {
   const all = new Set(allText.match(ACRONYM_RE) || []);
@@ -297,6 +368,8 @@ function detectSmells(sentence, undefAcrs) {
   const flags = {};
   SMELL_CODES.forEach(c => flags[c] = 0);
   if (s.length < 20) return flags;
+
+  // ===== 핵심 10종 (v1.0~v2.0) =====
 
   // S1 — 의무 2회 이상
   const dutyMatches = s.match(new RegExp(STRONG_DUTY_RE.source, 'g')) || [];
@@ -341,6 +414,40 @@ function detectSmells(sentence, undefAcrs) {
 
   // S10 — 정성 표현 + 측정 부재
   if (QUALITATIVE_RE.test(s) && !NUMBER_RE.test(s)) flags.S10 = 1;
+
+  // ===== 확장 5종 (v2.7 — ISO/INCOSE/EARS) =====
+
+  // S11 — 구현편향
+  if (IMPL_BIAS_RE.test(s)) flags.S11 = 1;
+
+  // S12 — 부정문
+  if (NEGATIVE_STMT_RE.test(s)) flags.S12 = 1;
+
+  // S13 — 추측표현
+  if (SPECULATIVE_RE.test(s)) flags.S13 = 1;
+
+  // S14 — 수혜자불명 (의무 표현 있으나 persona 부재)
+  if (hasDuty && !PERSONA_TERMS.test(s)) flags.S14 = 1;
+
+  // S15 — 지시어모호
+  if (PRONOUN_AMBIG_RE.test(s)) flags.S15 = 1;
+
+  // ===== CMMI/NCS 4종 (v2.8 신규) =====
+
+  // S16 — 필요성불명확
+  if (NECESSITY_RED_FLAGS_RE.test(s)) flags.S16 = 1;
+
+  // S17 — 실현불가 (절대치)
+  if (INFEASIBLE_ABSOLUTE_RE.test(s)) flags.S17 = 1;
+
+  // S18 — 추적ID부재: 강한 의무 + ID 부재 + 출처 부재
+  if (hasDuty && !REQ_ID_PATTERN.test(s) && !SOURCE_RATIONALE_RE.test(s)) flags.S18 = 1;
+
+  // S19 — 제약카테고리불명: 제약 시그널 + 5 카테고리 0개
+  if (CONSTRAINT_SIGNAL_RE.test(s)) {
+    const cats = classifyConstraintCategory(s);
+    if (cats.length === 0) flags.S19 = 1;
+  }
 
   return flags;
 }
@@ -392,6 +499,34 @@ function correctSentence(sentence, flags) {
     const before = s;
     s = s.replace(/(\S+),\s*(\S+)\s*등을\s/g, '$1, $2 [열거 명시 필요]을 ');
     if (s !== before) rules.push('S8:등을→[열거명시]');
+  }
+
+  // ===== v2.8 신규 마커 =====
+
+  // S16 필요성 불명확
+  if (flags.S16) {
+    s = '[정당화 필요] ' + s;
+    rules.push('S16:[정당화 필요]');
+  }
+
+  // S17 실현불가
+  if (flags.S17) {
+    s = s.replace(/100\s*%\s*(가용|정확|성공|완벽|보장|만족)/g, '[현실적 수치 필요: SLO·SLA] $1');
+    s = s.replace(/완벽한/g, '[측정 가능한 기준 필요]');
+    s = s.replace(/0\s*초/g, '[현실적 응답시간 필요]');
+    rules.push('S17:[현실적 수치 필요]');
+  }
+
+  // S18 추적 ID 부재
+  if (flags.S18) {
+    s = '[ID·출처 필요: REQ-XXX·근거 정책] ' + s;
+    rules.push('S18:[ID·출처 필요]');
+  }
+
+  // S19 제약 카테고리 불명
+  if (flags.S19) {
+    s = s.replace(/(제약|제한)/g, '[카테고리 명시: TECH/BIZ/COMP/OPS/SEC] $1');
+    rules.push('S19:[카테고리 명시 필요]');
   }
 
   return { corrected: s, rules };
@@ -528,7 +663,7 @@ async function evaluate() {
     }
   }
   $('progressBar').style.width = '100%';
-  $('progressText').textContent = `완료 — ${rows.length}건 평가`;
+  $('progressText').textContent = `완료 — ${rows.length}건 평가 (19종 smell 검사)`;
 
   showResults();
 }
@@ -566,6 +701,11 @@ function showResults() {
     let corrected = r.corrected;
     corrected = corrected.replace(/\[명세[^\]]+\]/g, m => `<span class="correction-marker">${m}</span>`);
     corrected = corrected.replace(/\[열거[^\]]+\]/g, m => `<span class="correction-marker">${m}</span>`);
+    corrected = corrected.replace(/\[정당화[^\]]*\]/g, m => `<span class="correction-marker">${m}</span>`);
+    corrected = corrected.replace(/\[현실적[^\]]+\]/g, m => `<span class="correction-marker">${m}</span>`);
+    corrected = corrected.replace(/\[측정[^\]]+\]/g, m => `<span class="correction-marker">${m}</span>`);
+    corrected = corrected.replace(/\[ID[^\]]+\]/g, m => `<span class="correction-marker">${m}</span>`);
+    corrected = corrected.replace(/\[카테고리[^\]]+\]/g, m => `<span class="correction-marker">${m}</span>`);
     html += `
       <tr class="${r.hasSmell ? 'has-smell' : ''}">
         <td>${i+1}</td>
@@ -639,21 +779,28 @@ function downloadResult() {
   resultData.forEach(r => SMELL_CODES.forEach(c => { if (r.flags[c]) smellCounts[c]++; }));
 
   const summaryRows = [
-    ['KoFinRe 평가 요약', ''],
+    ['KoFinRe v2.8 평가 요약', ''],
+    ['Smell taxonomy', '19종 (Paska + IEEE 830 + ISO 29148 + INCOSE + EARS + CMMI + NCS)'],
     ['', ''],
     ['총 요구사항', total],
     ['Smell 검출 (1+)', smelly],
     ['Smell 비율', `${(100*smelly/Math.max(total,1)).toFixed(1)}%`],
     ['깨끗한 요구사항', total - smelly],
     ['', ''],
-    ['Smell 유형별', ''],
-    ...SMELL_CODES.map(c => [`${c} ${SMELL_NAMES_KO[c]}`, smellCounts[c]]),
+    ['핵심 10종 (Paska + 한국 특화)', ''],
+    ...['S1','S2','S3','S4','S5','S6','S7','S8','S9','S10'].map(c => [`${c} ${SMELL_NAMES_KO[c]}`, smellCounts[c]]),
+    ['', ''],
+    ['확장 5종 (ISO/INCOSE/EARS)', ''],
+    ...['S11','S12','S13','S14','S15'].map(c => [`${c} ${SMELL_NAMES_KO[c]}`, smellCounts[c]]),
+    ['', ''],
+    ['CMMI/NCS 4종 (v2.8 신규)', ''],
+    ...['S16','S17','S18','S19'].map(c => [`${c} ${SMELL_NAMES_KO[c]}`, smellCounts[c]]),
   ];
   const summaryWs = XLSX.utils.aoa_to_sheet(summaryRows);
   XLSX.utils.book_append_sheet(workbook, summaryWs, 'KoFinRe_요약');
 
   // 다운로드
-  const outName = `${originalFileName}_KoFinRe평가.xlsx`;
+  const outName = `${originalFileName}_KoFinRe_v2.8평가.xlsx`;
   XLSX.writeFile(workbook, outName);
 }
 

@@ -81,7 +81,7 @@ def cmd_sample(args):
 ## 개요
 - 표본 크기: {len(sample)}건
 - 평가자 2명 (R1, R2) 독립 판정 필수
-- Smell 코드 10종: S1~S10
+- Smell 코드 19종: S1~S19 (v2.8)
 
 ## 작성 순서
 
