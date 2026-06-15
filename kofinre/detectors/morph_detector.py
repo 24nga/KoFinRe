@@ -1,26 +1,24 @@
-"""Morphological analyzer detector — kiwipiepy (Kiwi C++) 기반 형태소 분석.
+"""Morphological analyzer detector — kiwipiepy 형태소 정밀 분석.
 
-논문 Stage 3: 'Morphological Analyzer — 형태소, 품사, 종결어미, 조사, 명사구 후보 분석'
+v2.6 (2026-06-12) 한국어 고도화:
+- 종결어미 5단계 분류 (강한 의무 / 약한 의무 / 평서 / 명령 / 의문)
+- 격조사 정밀 분류 (NOM/ACC/LOC/GEN/TOPIC)
+- 부정·이중부정 검출 (S2 정밀화)
+- 번역체 흔적 (RFP 품질 신호)
+- 한국 RFP 도메인 어휘 활용 (korean_patterns 모듈 위임)
 
-v2.3 (2026-06-12): kiwipiepy 통합. Java 불필요, pip install 만으로 설치.
-kiwipiepy 미설치 환경에선 정규식 fallback 으로 동작.
-
-POS 태그 (세종 태그셋):
-- NNG: 일반명사
-- NNP: 고유명사
-- JKS: 주격조사 (이/가)
-- JKO: 목적격조사 (을/를)
-- JX:  보조사 (은/는/도/만)
-- VV:  동사
-- VA:  형용사
-- XSV: 동사 접미사 (하-)
-- EC:  연결어미 (어야, 며, 고)
-- EF:  종결어미 (다, ㄴ다, 함)
-- MM:  관형사 (본, 이)
+POS 태그 (세종):
+- NNG/NNP: 명사
+- JKS/JKO/JKB/JKG: 격조사
+- JX: 보조사 (은/는/도/만)
+- VV/VA/VX: 동사·형용사·보조용언
+- EC/EF: 어미
+- XSV: 동사 접미사
 """
 import re
-from typing import Dict, Any, List, Tuple
+from typing import Dict, Any
 from .base import BaseDetector, DetectorResult, Confidence
+from .. import korean_patterns as kp
 
 
 # ───────── kiwipiepy 가용성 체크 ─────────
@@ -39,66 +37,77 @@ except ImportError:
     HAS_KIWI = False
 
 
-# ───────── Fallback 정규식 (kiwipiepy 부재 시) ─────────
-DECLARATIVE_END = re.compile(r'(한다|된다|이다|있다|없다)\.?\s*$')
-IMPERATIVE_END = re.compile(r'(해야 한다|하여야 한다|되어야 한다|할 수 있어야)')
-NOM_PARTICLE = re.compile(r'[가-힣]+(이|가|은|는)\s')
-OBJ_PARTICLE = re.compile(r'[가-힣]+(을|를)\s')
-
-
-# ───────── kiwipiepy 기반 분석 ─────────
 def analyze_with_kiwi(sentence: str) -> Dict[str, Any]:
-    """문장 분석 결과 — 의무성·주체·대상·수동 여부."""
+    """kiwipiepy 형태소 분석 → 5 카테고리 신호 추출."""
     kiwi = _get_kiwi()
     tokens = kiwi.tokenize(sentence)
 
-    has_subject_particle = False     # JKS / JX 검출
-    has_object_particle = False      # JKO 검출
-    has_imperative_ending = False    # EF "어야 한다" 의무 종결
-    has_declarative_ending = False   # EF 평서형 종결
-    has_passive_marker = False       # "되" + EF/EC 수동 패턴
-    has_noun_before_obj = False      # NNG + JKO 결합 (target 명확)
-    has_noun_before_subj = False     # NNG + JKS/JX 결합 (actor 명확)
+    # 카테고리별 카운트
+    counts = {
+        'nom_particle': 0,      # JKS — 이/가
+        'acc_particle': 0,      # JKO — 을/를
+        'topic_particle': 0,    # JX(은/는) — 보조사
+        'loc_particle': 0,      # JKB — 에/에서
+        'noun_count': 0,        # NNG/NNP
+        'verb_count': 0,        # VV/VX
+        'ending_imperative': 0, # EC 의무 어미
+        'ending_declarative': 0, # EF 평서 어미
+        'passive_marker': 0,    # 되 + 어미
+    }
 
-    prev_tag = None
-    sentence_tail = ''.join(t.form for t in tokens[-6:])
+    prev_token = None
+    for t in tokens:
+        if t.tag in ('JKS',):
+            counts['nom_particle'] += 1
+        elif t.tag == 'JKO':
+            counts['acc_particle'] += 1
+        elif t.tag == 'JX' and t.form in ('은', '는'):
+            counts['topic_particle'] += 1
+        elif t.tag == 'JKB':
+            counts['loc_particle'] += 1
+        elif t.tag in ('NNG', 'NNP', 'NP'):
+            counts['noun_count'] += 1
+        elif t.tag in ('VV', 'VX', 'VA'):
+            counts['verb_count'] += 1
+            if t.form in ('되', '돼'):
+                counts['passive_marker'] += 1
+        elif t.tag == 'EC':
+            if t.form in ('어야', '아야', '여야'):
+                counts['ending_imperative'] += 1
+        elif t.tag == 'EF':
+            if any(p in t.form for p in ('어야', '아야', '여야')):
+                counts['ending_imperative'] += 1
+            elif t.form in ('다', 'ᆫ다', '는다', '함', '됨', '음'):
+                counts['ending_declarative'] += 1
+        prev_token = t
 
-    for i, t in enumerate(tokens):
-        if t.tag == 'JKS' or (t.tag == 'JX' and t.form in ('은', '는')):
-            has_subject_particle = True
-            if prev_tag in ('NNG', 'NNP', 'NP'):
-                has_noun_before_subj = True
-        if t.tag == 'JKO':
-            has_object_particle = True
-            if prev_tag in ('NNG', 'NNP', 'NP'):
-                has_noun_before_obj = True
-        if t.tag == 'EF':
-            if t.form in ('어야', '아야', '여야') or '어야' in t.form:
-                has_imperative_ending = True
-            elif t.form in ('다', 'ᆫ다', '는다', '함', '됨'):
-                has_declarative_ending = True
-        if t.tag == 'EC' and t.form in ('어야', '아야', '여야'):
-            has_imperative_ending = True
-        # 수동 — "되" + EF/EC
-        if t.form in ('되', '돼') and t.tag in ('VV', 'VX'):
-            has_passive_marker = True
-        prev_tag = t.tag
+    # 패턴 모듈 호출 — 명사 직후 격조사 결합 확인
+    has_noun_with_nom = (counts['noun_count'] >= 1
+                         and (counts['nom_particle'] + counts['topic_particle']) >= 1)
+    has_noun_with_acc = counts['noun_count'] >= 1 and counts['acc_particle'] >= 1
 
-    # "되어야 한다" / "되어야 함" 패턴 보완
-    if '되어야' in sentence or '지원되어야' in sentence or '구현되어야' in sentence:
-        has_passive_marker = True
-    # "해야 한다 / 하여야 한다" 추가 확인
-    if any(p in sentence for p in ('해야 한다', '하여야 한다', '해야 함', '하여야 함')):
-        has_imperative_ending = True
+    # 의무 강도 분류 (korean_patterns 위임)
+    obligation = kp.classify_obligation_strength(sentence)
 
     return {
-        'has_subject': has_subject_particle or has_noun_before_subj,
-        'has_object': has_object_particle or has_noun_before_obj,
-        'has_imperative': has_imperative_ending,
-        'has_declarative': has_declarative_ending,
-        'has_passive': has_passive_marker,
-        'has_noun_before_obj': has_noun_before_obj,
-        'has_noun_before_subj': has_noun_before_subj,
+        # 격조사·주체
+        'has_subject_marker': has_noun_with_nom,
+        'has_object_marker': has_noun_with_acc,
+        'subject_marker_count': counts['nom_particle'] + counts['topic_particle'],
+        'object_marker_count': counts['acc_particle'],
+        # 의무 강도
+        'obligation': obligation,
+        'is_strong_obligation': obligation == 'strong',
+        'is_declarative': obligation == 'declarative',
+        # 수동
+        'has_passive': counts['passive_marker'] > 0 or kp.has_passive_marker(sentence),
+        # 도메인 신호
+        'has_actor_keyword': kp.has_actor_keyword(sentence),
+        # 보조 분석
+        'has_negation_double': kp.has_double_negation(sentence),
+        'has_translationese': kp.has_translationese(sentence),
+        'noun_count': counts['noun_count'],
+        'verb_count': counts['verb_count'],
         'token_count': len(tokens),
     }
 
@@ -110,72 +119,79 @@ class MorphDetector(BaseDetector):
         self.use_kiwi = use_kiwi and HAS_KIWI
 
     def detect(self, sentence: str, doc_context: Dict[str, Any] = None) -> DetectorResult:
-        s = sentence
+        s = sentence.strip()
         res = DetectorResult(sentence=s)
 
-        # Fix #1 일관성 (v2.2): short fragment 는 평가 스킵
-        if len(s.strip()) < 30:
+        # short bullet 스킵 (v2.2 일관성)
+        if len(s) < 30:
             for c in ["S1","S2","S3","S4","S5","S6","S7","S8","S9","S10"]:
                 res.set(c, False)
             res.meta = {"skip_reason": "short_bullet"}
             return res
 
-        if self.use_kiwi:
-            try:
-                analysis = analyze_with_kiwi(s)
-            except Exception as e:
-                analysis = None
-                res.meta['kiwi_error'] = str(e)
-        else:
-            analysis = None
+        if not self.use_kiwi:
+            for c in ["S1","S2","S3","S4","S5","S6","S7","S8","S9","S10"]:
+                res.set(c, False)
+            res.meta = {"skip_reason": "kiwi_unavailable"}
+            return res
 
-        if analysis is None:
-            # Fallback — 정규식 휴리스틱
-            has_subject = NOM_PARTICLE.search(s) is not None
-            has_object = OBJ_PARTICLE.search(s) is not None
-            has_imperative = IMPERATIVE_END.search(s) is not None
-            has_declarative = DECLARATIVE_END.search(s) is not None
-            has_passive = '되어야' in s
-            analysis = {
-                'has_subject': has_subject,
-                'has_object': has_object,
-                'has_imperative': has_imperative,
-                'has_declarative': has_declarative,
-                'has_passive': has_passive,
-                'has_noun_before_obj': has_object,
-                'has_noun_before_subj': has_subject,
-                'token_count': len(s.split()),
-            }
+        try:
+            a = analyze_with_kiwi(s)
+        except Exception as e:
+            for c in ["S1","S2","S3","S4","S5","S6","S7","S8","S9","S10"]:
+                res.set(c, False)
+            res.meta = {"error": str(e)}
+            return res
 
-        # ─────── Smell 판정 ───────
-
-        # S2 Incomplete — 의무 표현 + 목적 부재 (target 없음)
-        if analysis['has_imperative'] and not analysis['has_object']:
-            res.set("S2", True, Confidence.HIGH, "kiwi: 의무+JKO부재")
+        # ─── S2 Incomplete — 강한 의무 + 목적 부재 + 행위 동사 부재 ───
+        # 명사 1+ 와 동사 1+ 모두 있어야 완전
+        if a['is_strong_obligation']:
+            target_missing = not a['has_object_marker']
+            verb_missing = a['verb_count'] == 0
+            if target_missing and verb_missing:
+                res.set("S2", True, Confidence.HIGH, "kiwi:대상·행위 모두 부재")
+            elif target_missing and a['noun_count'] < 2:
+                res.set("S2", True, Confidence.MEDIUM, "kiwi:대상 명사구 부족")
+            else:
+                res.set("S2", False)
         else:
             res.set("S2", False)
 
-        # S5 Missing Actor — 의무 표현 + 주체 부재
-        if analysis['has_imperative'] and not analysis['has_subject']:
-            res.set("S5", True, Confidence.HIGH, "kiwi: 의무+주격조사부재")
-        else:
-            res.set("S5", False)
-
-        # S4 Weak Obligation — 평서형 + 의무 부재 + 수동 부재
-        if analysis['has_declarative'] and not analysis['has_imperative'] and not analysis['has_passive']:
-            res.set("S4", True, Confidence.HIGH, "kiwi: 평서형 종결")
+        # ─── S4 Weak Obligation ───
+        # 평서형 종결 + 강한 의무 없음 + 수동도 없음 + 이중부정도 없음
+        if (a['is_declarative']
+                and not a['is_strong_obligation']
+                and not a['has_passive']
+                and not a['has_negation_double']):
+            res.set("S4", True, Confidence.HIGH, "kiwi:평서형 종결")
         else:
             res.set("S4", False)
 
-        # S9 Passive — 수동 마커
-        if analysis['has_passive']:
-            res.set("S9", True, Confidence.HIGH, "kiwi: 수동 패턴")
+        # ─── S5 Missing Actor ───
+        # 강한 의무 + 주격·보조사 부재 + 주체 키워드도 부재
+        if a['is_strong_obligation']:
+            if not a['has_subject_marker'] and not a['has_actor_keyword']:
+                res.set("S5", True, Confidence.HIGH, "kiwi:주체 조사·키워드 부재")
+            else:
+                res.set("S5", False)
+        else:
+            res.set("S5", False)
+
+        # ─── S9 Passive ───
+        if a['has_passive']:
+            res.set("S9", True, Confidence.HIGH, "kiwi:수동 마커")
         else:
             res.set("S9", False)
 
-        # 나머지는 morph 단독 검출 어려움
+        # ─── 나머지는 morph 단독 검출 어려움 ───
         for c in ["S1","S3","S6","S7","S8","S10"]:
             res.set(c, False)
 
-        res.meta.update(analysis)
+        # 메타 — 번역체·이중부정 등 추가 신호
+        res.meta.update(a)
+        if a['has_translationese']:
+            res.meta['quality_signal'] = 'translationese_detected'
+        if a['has_negation_double']:
+            res.meta['quality_signal'] = (res.meta.get('quality_signal', '') + ' double_negation').strip()
+
         return res

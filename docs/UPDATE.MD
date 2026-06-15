@@ -13,6 +13,69 @@
 
 ---
 
+## [2.6.0] — 2026-06-12 — 한국어 특화 고도화 (korean_patterns 모듈)
+
+### Added
+
+- **`kofinre/korean_patterns.py`** — 한국어 RFP 특화 패턴 사전
+  - A. 종결어미 5단계 분류 (강한 의무 / 약한 의무 / 평서 / 명령 / 의문)
+  - B. 격조사 정밀 분류 (NOM 이/가, ACC 을/를, TOPIC 은/는, LOC 에/에서, GEN 의)
+  - C. 부정·이중부정 (`~하지 않다`, `없지 않다`, `아닌 것은 아니다`)
+  - D. 모호어 4 카테고리 (어휘/양화/시간/단위)
+  - E. 한국 RFP 도메인 어휘 (주체·행위·인터페이스·데이터·품질속성)
+  - F. 수동·피동 정밀 (`되어야`, `하게 되어 있다`)
+  - G. **번역체 흔적** (`~을 가지다`, `~에 있어서는`) — 품질 신호
+  - H. 범위 모호 확장 (`기타`, `또는 그 이상`)
+  - I. 한국어 수량 단위 (`건`, `회`, `명`, `TPS`, `밀리초` 등)
+  - J. 정성 표현 (검증불가 보조)
+- 헬퍼 함수: `classify_obligation_strength`, `find_vague_terms`, `has_actor_keyword`, `has_quantitative_unit`, `is_qualitative_without_metric`, `has_translationese`, `has_double_negation`
+- **`tests/test_korean_patterns.py`** — 15 단위 테스트 (의무 분류·모호어·번역체·정량 단위·정성 표현·주체 키워드)
+
+### Changed
+
+- **MorphDetector** (`kofinre/detectors/morph_detector.py`):
+  - kiwipiepy + korean_patterns 통합
+  - S2: 강한 의무 + 목적 부재 + 행위 동사 부재 → HIGH confidence
+  - S4: 평서형 + 강한 의무 X + 수동 X + 이중부정 X → 정밀화
+  - S5: 주격·보조사 부재 + 주체 키워드 부재 → HIGH
+  - S9: 수동 마커 + korean_patterns 위임
+  - 메타: 번역체·이중부정 신호 기록
+- **RegexDetector** (`kofinre/detectors/regex_detector.py`):
+  - S3: `find_vague_terms` 위임 (어휘·양화·시간 3 카테고리)
+  - S6: `QUALITY_KEYWORDS` + 한국어 단위 (`건/초`, `밀리초` 등)
+  - S8: `COORD_AMBIGUOUS` 확장 (`기타`, `또는 그 이상`)
+  - S10: `is_qualitative_without_metric` 위임
+
+### D4 v2.5 → v2.6 효과
+
+| 카테고리 | v2.5 | v2.6 | Δ |
+|---|---:|---:|---:|
+| FA 회계 | 94.7% | 91.6% | **-3.2 pp** |
+| BG 예산 | 69.2% | 69.2% | 0 |
+| CI 신용정보 | 94.7% | 89.5% | **-5.3 pp** |
+| CM 공통 | 45.3% | 50.9% | +5.7 pp (단위·정성 정밀화로 검출 추가) |
+| **합계** | **79.4%** | **78.2%** | **-1.2 pp** |
+
+### Smell 유형별 변화
+
+| Smell | v2.5 | v2.6 | 변화 사유 |
+|---|---:|---:|---|
+| S3 모호어 | 9 | 10 | 양화·시간 모호 카테고리 추가 |
+| **S4 약한의무** | **113** | **59** | 이중부정·번역체 제외 → 정밀화 |
+| S6 정량부재 | 6 | 10 | 한국어 단위(건/초·밀리초) 인식 |
+| S7 미정의약어 | 28 | 28 | 동일 |
+| S10 검증불가 | 1 | 2 | 정성+단위 검사 강화 |
+| S5 주체누락 | 161 | 159 | 주체 키워드 인식 강화 |
+| S2 불완전 | 181 | 181 | 동일 |
+
+### Tests
+
+- 15/15 통과 (`tests/test_korean_patterns.py`)
+- 기존 11/12 유지 (`tests/test_detectors.py`)
+- 회귀 없음 (`examples/basic_usage.py` 동일 결과)
+
+---
+
 ## [2.5.1] — 2026-06-12 — 웹 평가기 + MECE 논문
 
 ### Added

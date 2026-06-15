@@ -198,8 +198,10 @@ v2.x 에서 4 방식 baseline (Rule/NLP/LLM/Ensemble) 비교 자동화 예정.
 | v2.2 | ✓ | ChunkDetector 정밀화 (short bullet/목적조사/양식 파이프) — D4 -16ppt |
 | v2.3 | ✓ | kiwipiepy 형태소 분석 본격 통합 — 자동 FP 26→3.9% (-22ppt) |
 | v2.4 | ✓ | Anthropic LLM 어댑터, 문서 PDF 번들, R1 시뮬 평가 |
-| **v2.5** | **현재** | 휴리스틱 교정 + 4방식 baseline 비교 — Rule-only Macro 0.28 |
-| v2.6 | 예정 | confidence_weighted ensemble + 실제 평가자 데이터셋 |
+| v2.5 | ✓ | 휴리스틱 교정 + 4방식 baseline 비교 — Rule-only Macro 0.28 |
+| v2.5.1 | ✓ | 웹 HTML 평가기, MECE 논문 PAPER_FINAL.md |
+| **v2.6** | **현재** | **한국어 특화 고도화** — korean_patterns 모듈 (종결5분류/격조사/번역체/이중부정) |
+| v2.7 | 예정 | confidence_weighted ensemble + 실제 평가자 데이터셋 |
 | v2.3 | 예정 | 200건 gold label, baseline 비교 자동화 |
 
 ---

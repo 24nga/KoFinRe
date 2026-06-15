@@ -10,6 +10,7 @@ import re
 from collections import Counter
 from typing import Dict, Any, Set
 from .base import BaseDetector, DetectorResult, Confidence
+from .. import korean_patterns as kp
 
 
 # ───────────────── S3 Ambiguous Term — 어휘 모호 ─────────────────
@@ -134,10 +135,17 @@ class RegexDetector(BaseDetector):
                 "대상·행위 부재" if has_duty and not has_object and not has_action_noun
                 else "조건만" if only_condition else "")
 
-        # S3 Ambiguous term — 어휘 모호
-        vague_hits = [t for t in VAGUE_TERMS if t in s]
-        res.set("S3", bool(vague_hits), Confidence.HIGH if vague_hits else 0.0,
-                "|".join(vague_hits))
+        # S3 Ambiguous term — 어휘·양화·시간 3 카테고리 (v2.6 확장)
+        vague_categorized = kp.find_vague_terms(s)
+        if vague_categorized:
+            categories = sorted(set(c for c, _ in vague_categorized))
+            hits = '|'.join(f'{c}:{t}' for c, t in vague_categorized[:5])
+            res.set("S3", True, Confidence.HIGH, hits + f' [cat:{",".join(categories)}]')
+        else:
+            # legacy 호환 — 기존 VAGUE_TERMS 백업
+            vague_hits = [t for t in VAGUE_TERMS if t in s]
+            res.set("S3", bool(vague_hits), Confidence.HIGH if vague_hits else 0.0,
+                    "|".join(vague_hits))
 
         # S4 Weak Obligation — 평서형 종결 + 강한 의무 없음 + 수동태 없음
         weak = (WEAK_DUTY_END.search(s) is not None
@@ -160,30 +168,35 @@ class RegexDetector(BaseDetector):
         res.set("S5", missing_actor, Confidence.MEDIUM if missing_actor else 0.0,
                 "주체 후보 부재")
 
-        # S6 Missing Quantification — 성능 키워드 + 숫자 없음
-        missing_quant = PERF_KEYS.search(s) is not None and NUMBER_RE.search(s) is None
+        # S6 Missing Quantification — 품질속성 키워드 + 정량 단위 부재 (v2.6 확장)
+        has_quality = kp.QUALITY_KEYWORDS.search(s) is not None
+        has_korean_unit = kp.has_quantitative_unit(s)
+        # legacy 폴백
+        has_legacy_perf = PERF_KEYS.search(s) is not None
+        has_legacy_num = NUMBER_RE.search(s) is not None
+        missing_quant = ((has_quality or has_legacy_perf)
+                         and not has_korean_unit and not has_legacy_num)
         res.set("S6", missing_quant, Confidence.HIGH if missing_quant else 0.0,
-                "성능 키워드 + 정량 부재")
+                "품질속성 키워드 + 정량 단위 부재" if missing_quant else "")
 
         # S7 Undefined Acronym — 문서 단위 약어 컨텍스트 사용
         in_sent = [a for a in undef_acrs if a in s]
         res.set("S7", bool(in_sent), Confidence.HIGH if in_sent else 0.0, "|".join(in_sent))
 
-        # S8 Coordination Ambiguity — 범위 모호
-        coord = COORD_RE.search(s) is not None
+        # S8 Coordination Ambiguity — 범위 모호 (v2.6 확장: 기타·또는 그 이상)
+        coord_match = kp.COORD_AMBIGUOUS.search(s) or COORD_RE.search(s)
+        coord = coord_match is not None
         res.set("S8", coord, Confidence.MEDIUM if coord else 0.0,
-                COORD_RE.search(s).group() if coord else "")
+                coord_match.group() if coord_match else "")
 
         # S9 Passive — 수동/주체 흐림
         passive = PASSIVE_RE.search(s) is not None
         res.set("S9", passive, Confidence.HIGH if passive else 0.0,
                 PASSIVE_RE.search(s).group() if passive else "")
 
-        # S10 Unverifiable — 정성 표현 + 측정 기준 부재
-        has_qualitative = QUALITATIVE_RE.search(s) is not None
-        has_measure = NUMBER_RE.search(s) is not None
-        unverifiable = has_qualitative and not has_measure
+        # S10 Unverifiable — 정성 표현 + 측정 기준 부재 (v2.6 한국어 단위 활용)
+        unverifiable = kp.is_qualitative_without_metric(s)
         res.set("S10", unverifiable, Confidence.MEDIUM if unverifiable else 0.0,
-                QUALITATIVE_RE.search(s).group() if unverifiable else "")
+                kp.QUALITATIVE_NO_METRIC.search(s).group() if unverifiable else "")
 
         return res
