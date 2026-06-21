@@ -22,10 +22,10 @@
 | **Stage 4** 평가 | 라벨 + (선택) gold label | Precision/Recall/F1/Kappa + 리포트 6종 |
 | **Stage 5** 교정 | smell 검출 요구사항 | LLM 6원칙 교정 + 재평가 |
 
-> **논문 최종본 (MECE)**: [`docs/PAPER_FINAL.md`](./docs/PAPER_FINAL.md) 📄
-> **요구공학 표준 ↔ KoFinRe 갭 분석**: [`docs/STANDARDS_COMPARISON.md`](./docs/STANDARDS_COMPARISON.md) 📊
+> **논문 최종본 (MECE, v2.8 19종, 다도메인)**: [`docs/PAPER_FINAL.md`](./docs/PAPER_FINAL.md) 📄
 > **CMMI/NCS 비교 분석**: [`docs/CMMI_NCS_COMPARISON.md`](./docs/CMMI_NCS_COMPARISON.md) 📋
-> **전체 프로젝트 여정 (v1.0 → v2.5)**: [`docs/JOURNEY.md`](./docs/JOURNEY.md) ⭐
+> **전체 프로젝트 여정 (v1.0 → v2.8)**: [`docs/JOURNEY.md`](./docs/JOURNEY.md) ⭐
+> **D5 다도메인 샘플 실험 (NEW)**: [`experiments/rfp_2013_sample/`](./experiments/rfp_2013_sample/) 🧪
 > **웹 평가기 (XLSX 업로드)**: [`web/index.html`](./web/index.html) 🌐
 
 ---
@@ -86,7 +86,15 @@ KoFinRe/
 ├── scripts/                      ← CLI entrypoint
 │   ├── run_extraction.py         ← Stage 1
 │   ├── run_detection.py          ← Stage 2-3
-│   └── build_pdf_bundle.py       ← 문서 PDF 번들 (v2.8, --include-old 옵션)
+│   ├── build_pdf_bundle.py       ← 문서 PDF 번들 (v2.8, --include-old 옵션)
+│   ├── extract_rfp2013_xlsx.py   ← D5 XLSX 정형 추출 (NEW)
+│   └── evaluate_rfp2013.py       ← D5 평가 + report.md 자동 생성 (NEW)
+│
+├── experiments/                  ← 🧪 재현 가능한 샘플 실험 (NEW v2.8)
+│   └── rfp_2013_sample/          ← D5: 2013 다도메인 RFP 사례 (4,075 req / 87.5%)
+│       ├── README.md             ← 실험 설명·재현 방법·핵심 발견
+│       ├── stage1/               ← 추출 산출물 (sentence/requirement/xlsx CSV)
+│       └── stage3/               ← 평가 산출물 (all_detection + report.md)
 │
 ├── examples/                     ← 사용 예제
 ├── tests/                        ← 단위 테스트

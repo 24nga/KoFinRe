@@ -1,0 +1,106 @@
+[
+  {
+    "doc": "[국가기록원]2013년 국가기록물 정리사업",
+    "format": "ole2",
+    "extract_ok": true,
+    "sentence_candidates": 265,
+    "requirement_candidates": 16,
+    "failure_reason": ""
+  },
+  {
+    "doc": "[국가보훈처]2013년도_독립운동사료_DB구축사업(개발+DB구축사업 사례)",
+    "format": "ole2",
+    "extract_ok": true,
+    "sentence_candidates": 190,
+    "requirement_candidates": 29,
+    "failure_reason": ""
+  },
+  {
+    "doc": "[근로복지공단]2013년 통합의료정보시스템 제1차 확대구축 사업",
+    "format": "ole2",
+    "extract_ok": true,
+    "sentence_candidates": 269,
+    "requirement_candidates": 4,
+    "failure_reason": ""
+  },
+  {
+    "doc": "[법무부 인천공항출입국관리사무소]바이오정보전문분석시스템 구축(양식 우수)",
+    "format": "ole2",
+    "extract_ok": true,
+    "sentence_candidates": 392,
+    "requirement_candidates": 58,
+    "failure_reason": ""
+  },
+  {
+    "doc": "[법제처]2013국가입법지원사업",
+    "format": "ole2",
+    "extract_ok": true,
+    "sentence_candidates": 187,
+    "requirement_candidates": 43,
+    "failure_reason": ""
+  },
+  {
+    "doc": "[식품의약품안전청]CDISC_표준_e-CTD통합허가관리시스템_구축사업",
+    "format": "ole2",
+    "extract_ok": true,
+    "sentence_candidates": 506,
+    "requirement_candidates": 118,
+    "failure_reason": ""
+  },
+  {
+    "doc": "한국산업기술진흥원_201301_클라우드 시범 풀 구축사업_응락수준 삭제 등 보완 필요",
+    "format": "ole2",
+    "extract_ok": true,
+    "sentence_candidates": 393,
+    "requirement_candidates": 45,
+    "failure_reason": ""
+  },
+  {
+    "doc": "[대구광역시교육정보연구원]2013년_대구교육전산망센터_정보시스템_유지보수사업",
+    "format": "ole2",
+    "extract_ok": true,
+    "sentence_candidates": 212,
+    "requirement_candidates": 17,
+    "failure_reason": ""
+  },
+  {
+    "doc": "[서울의료원]통합의료정보시스템_유지운영용역",
+    "format": "ole2",
+    "extract_ok": true,
+    "sentence_candidates": 686,
+    "requirement_candidates": 93,
+    "failure_reason": ""
+  },
+  {
+    "doc": "[경상북도개발공사]경북도청이전신도시_U-City_구축사업_실시계획_및_설계용역(기능 부분 제외)",
+    "format": "ole2",
+    "extract_ok": true,
+    "sentence_candidates": 230,
+    "requirement_candidates": 12,
+    "failure_reason": ""
+  },
+  {
+    "doc": "[조달청]공공조달_데이터시스템_구축을_위한_정보화전략계획_수립_용역(응락수준제거필요)",
+    "format": "ole2",
+    "extract_ok": true,
+    "sentence_candidates": 221,
+    "requirement_candidates": 3,
+    "failure_reason": ""
+  },
+  {
+    "doc": "기능요구사항",
+    "format": "ole2",
+    "extract_ok": true,
+    "sentence_candidates": 6949,
+    "requirement_candidates": 2914,
+    "failure_reason": ""
+  },
+  {
+    "doc": "제안요청서",
+    "format": "ole2",
+    "extract_ok": true,
+    "sentence_candidates": 399,
+    "requirement_candidates": 57,
+    "failure_reason": ""
+  }
+]

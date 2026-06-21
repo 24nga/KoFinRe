@@ -2,7 +2,7 @@
 from .signatures import detect_kind, FileKind
 from .document_extractor import (
     extract_html, extract_pdf, extract_hwp, extract_rtf, extract_docx,
-    extract_by_signature,
+    extract_by_signature, normalize_text,
 )
 from .sentence_splitter import split_sentences, is_meaningful
 from .requirement_filter import is_requirement, FilterReason
@@ -10,7 +10,7 @@ from .requirement_filter import is_requirement, FilterReason
 __all__ = [
     "detect_kind", "FileKind",
     "extract_html", "extract_pdf", "extract_hwp", "extract_rtf", "extract_docx",
-    "extract_by_signature",
+    "extract_by_signature", "normalize_text",
     "split_sentences", "is_meaningful",
     "is_requirement", "FilterReason",
 ]

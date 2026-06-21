@@ -126,9 +126,9 @@ def extract_by_signature(path: Path, hwp_obj=None) -> tuple:
     if kind == FileKind.PDF:
         return extract_pdf(path), kind
     if kind in (FileKind.OLE2, FileKind.HWP_ALT):
-        return extract_hwp_via_temp(path, hwp_obj) if hwp_obj else (
-            extract_hwp(path), kind
-        )
+        if hwp_obj:
+            return extract_hwp(path, hwp_obj), kind
+        return extract_hwp(path), kind
     if kind == FileKind.ZIP:
         # DOCX/HWPX 시도 — 일단 docx 우선
         try:
