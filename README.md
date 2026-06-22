@@ -24,6 +24,7 @@
 
 > **논문 최종본 (MECE, v2.8 19종, 다도메인)**: [`docs/PAPER_FINAL.md`](./docs/PAPER_FINAL.md) 📄
 > **CMMI/NCS 비교 분석**: [`docs/CMMI_NCS_COMPARISON.md`](./docs/CMMI_NCS_COMPARISON.md) 📋
+> **금융 vs 공공 다도메인 비교 (NEW)**: [`docs/DOMAIN_COMPARISON.md`](./docs/DOMAIN_COMPARISON.md) 📊
 > **전체 프로젝트 여정 (v1.0 → v2.8)**: [`docs/JOURNEY.md`](./docs/JOURNEY.md) ⭐
 > **D5 다도메인 샘플 실험 (NEW)**: [`experiments/rfp_2013_sample/`](./experiments/rfp_2013_sample/) 🧪
 > **웹 평가기 (XLSX 업로드)**: [`web/index.html`](./web/index.html) 🌐
@@ -39,8 +40,9 @@ KoFinRe/
 ├── requirements.txt              ← 최소 의존성
 │
 ├── docs/                         ← 활성 문서 (v2.8)
-│   ├── PAPER_FINAL.md            ← ⭐ MECE 학술 최종본 (19종)
+│   ├── PAPER_FINAL.md            ← ⭐ MECE 학술 최종본 (19종, 다도메인)
 │   ├── CMMI_NCS_COMPARISON.md    ← CMMI 9 원칙 + NCS 5 카테고리 (v2.8)
+│   ├── DOMAIN_COMPARISON.md      ← 📊 금융(D1·D2·D4) vs 공공 다도메인(D5) 직접 비교
 │   ├── JOURNEY.md                ← 전체 여정 v1.0 → v2.8 (13단계)
 │   ├── UPDATE.MD                 ← Changelog (v1.0~v2.8)
 │   ├── EXTRACTION_RULES.md       ← 추출·필터 규칙
