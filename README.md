@@ -22,6 +22,7 @@
 | **Stage 4** 평가 | 라벨 + (선택) gold label | Precision/Recall/F1/Kappa + 리포트 6종 |
 | **Stage 5** 교정 | smell 검출 요구사항 | LLM 6원칙 교정 + 재평가 |
 
+> **논문 최종 제출 패키지 (v2.8.1 동결본)**: [`final/`](./final/) 🎓
 > **논문 최종본 (MECE, v2.8 19종, 다도메인)**: [`docs/PAPER_FINAL.md`](./docs/PAPER_FINAL.md) 📄
 > **CMMI/NCS 비교 분석**: [`docs/CMMI_NCS_COMPARISON.md`](./docs/CMMI_NCS_COMPARISON.md) 📋
 > **금융 vs 공공 다도메인 비교 (NEW)**: [`docs/DOMAIN_COMPARISON.md`](./docs/DOMAIN_COMPARISON.md) 📊
@@ -91,6 +92,12 @@ KoFinRe/
 │   ├── build_pdf_bundle.py       ← 문서 PDF 번들 (v2.8, --include-old 옵션)
 │   ├── extract_rfp2013_xlsx.py   ← D5 XLSX 정형 추출 (NEW)
 │   └── evaluate_rfp2013.py       ← D5 평가 + report.md 자동 생성 (NEW)
+│
+├── final/                        ← 🎓 논문 최종 제출 패키지 (v2.8.1 동결본)
+│   ├── README.md                 ← 패키지 안내 + 검수 이력
+│   ├── KoFinRe_Paper_v2.8.1_FINAL.md ← ⭐ 논문 최종본 (frozen)
+│   ├── DOMAIN_COMPARISON.md      ← 보조 A: 금융 vs 공공 비교 (frozen)
+│   └── CMMI_NCS_COMPARISON.md    ← 보조 B: CMMI/NCS 정렬 (frozen)
 │
 ├── experiments/                  ← 🧪 재현 가능한 샘플 실험 (NEW v2.8)
 │   └── rfp_2013_sample/          ← D5: 2013 다도메인 RFP 사례 (4,075 req / 87.5%)
