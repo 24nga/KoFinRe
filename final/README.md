@@ -7,7 +7,8 @@
 
 | 파일 | 역할 |
 |---|---|
-| **`KoFinRe_Paper_v2.8.1_FINAL.md`** | ⭐ 논문 최종본 — 한국어 SW/IT 요구사항 품질 자동 평가 프레임워크 (19종 smell · 5 데이터셋 · 6대 표준 정렬 · 다도메인 검증) |
+| **`KoFinRe_Paper_v2.8.1_FINAL.md`** | ⭐ 논문 최종본 (한국어 원본) — 한국어 SW/IT 요구사항 품질 자동 평가 프레임워크 (19종 smell · 5 데이터셋 · 6대 표준 정렬 · 다도메인 검증) |
+| **`KoFinRe_Paper_v2.8.1_FINAL_EN.md`** | 🌐 논문 최종본 영문판 (English translation) — 국제 학회/저널 제출용. 한국어 예문은 원문 유지 + 영문 gloss 병기 |
 | `DOMAIN_COMPARISON.md` | 보조 자료 A — 금융(D1·D2·D4) vs 공공 다도메인(D5) 직접 비교 (9 섹션) |
 | `CMMI_NCS_COMPARISON.md` | 보조 자료 B — CMMI 9 원칙 + NCS 5 제약 카테고리 표준 정렬 분석 (11 섹션) |
 
