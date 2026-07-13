@@ -20,7 +20,7 @@
 | **Stage 2** 정의 | — | **19종** 한국어 smell taxonomy (Paska + IEEE 830 / ISO 29148 / INCOSE / EARS / CMMI / NCS) |
 | **Stage 3** 탐지 | 요구사항 후보 | 5 detector + 앙상블 라벨 |
 | **Stage 4** 평가 | 라벨 + (선택) gold label | Precision/Recall/F1/Kappa + 리포트 6종 |
-| **Stage 5** 교정 | smell 검출 요구사항 | LLM 6원칙 교정 + 재평가 |
+| *(확장·후속 연구)* 교정 | smell 검출 요구사항 | LLM 6원칙 / 휴리스틱 마커 교정 — 예비 구현만 제공, 실증은 후속 연구 (논문 범위 외) |
 
 > **KCI 투고 초안 (메트릭 主 + 적용 검증, 골드라벨 진행 중)**: [`docs/KCI_DRAFT.md`](./docs/KCI_DRAFT.md) ✍️
 > **논문 최종 제출 패키지 (v2.8.1 동결본)**: [`final/`](./final/) 🎓
