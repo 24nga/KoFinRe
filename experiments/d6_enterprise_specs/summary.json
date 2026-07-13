@@ -1,0 +1,93 @@
+{
+  "dataset": "D6 — 익명화 실기업 요구사항 정의서 (9개 금융 프로젝트, 2011-2020)",
+  "framework": "KoFinRe v2.8 (repo HEAD), 19-smell taxonomy, 5-detector rule-priority ensemble, kiwipiepy 0.20.4",
+  "n_files_scanned": 140,
+  "n_files_latest": 116,
+  "total_requirements": 14278,
+  "with_smell": 12417,
+  "pct_smelly": 87.0,
+  "by_smell": {
+    "S1": 240,
+    "S2": 10625,
+    "S3": 1477,
+    "S4": 3421,
+    "S5": 8428,
+    "S6": 911,
+    "S7": 4341,
+    "S8": 870,
+    "S9": 893,
+    "S10": 543,
+    "S11": 7,
+    "S12": 21,
+    "S13": 97,
+    "S14": 0,
+    "S15": 162,
+    "S16": 1,
+    "S17": 1,
+    "S18": 758,
+    "S19": 278
+  },
+  "by_smell_pct": {
+    "S1": 1.7,
+    "S2": 74.4,
+    "S3": 10.3,
+    "S4": 24.0,
+    "S5": 59.0,
+    "S6": 6.4,
+    "S7": 30.4,
+    "S8": 6.1,
+    "S9": 6.3,
+    "S10": 3.8,
+    "S11": 0.0,
+    "S12": 0.1,
+    "S13": 0.7,
+    "S14": 0.0,
+    "S15": 1.1,
+    "S16": 0.0,
+    "S17": 0.0,
+    "S18": 5.3,
+    "S19": 1.9
+  },
+  "per_project": {
+    "P-A": {
+      "n": 1312,
+      "pct_smelly": 85.8
+    },
+    "P-B": {
+      "n": 10108,
+      "pct_smelly": 85.8
+    },
+    "P-C": {
+      "n": 355,
+      "pct_smelly": 92.1
+    },
+    "P-D": {
+      "n": 930,
+      "pct_smelly": 93.4
+    },
+    "P-E": {
+      "n": 181,
+      "pct_smelly": 76.8
+    },
+    "P-F": {
+      "n": 1056,
+      "pct_smelly": 97.9
+    },
+    "P-G": {
+      "n": 30,
+      "pct_smelly": 76.7
+    },
+    "P-H": {
+      "n": 306,
+      "pct_smelly": 74.8
+    }
+  },
+  "anonymization": {
+    "org_masked": 873,
+    "person_masked": 188,
+    "vendor_masked": 50,
+    "url_masked": 3
+  },
+  "excluded": "P-I 1 file (DRM-encrypted, SCDSA002 container)",
+  "generated": "2026-07-12"
+}

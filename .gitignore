@@ -55,3 +55,7 @@ node_modules/
 # ─── 큰 결과물 (Releases로 배포) ───
 *.zip
 *.tar.gz
+
+# D6 raw inputs/outputs (contain sentence text) - LOCAL_ONLY
+data_d6_input.csv
+results_d6/
