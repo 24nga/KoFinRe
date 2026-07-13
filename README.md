@@ -14,9 +14,13 @@
 
 ## 무엇을 하나
 
+평가 대상은 **2 카테고리**로 분리한다:
+- **[A] RFP 평가** (발주 단계, 비정형 서술) — Stage 1 추출·필터 적용 후 평가 (D1·D2·D5)
+- **[B] 요구사항정의서 평가** (수행 단계, 정형 양식) — 양식 파싱으로 전수 행 직접 평가 (D4·D6)
+
 | 단계 | 입력 | 출력 |
 |---|---|---|
-| **Stage 1** 추출 | RFP 공고 (HTML/HWP/PDF/DOCX/RTF) | 문장 후보 + 요구사항 후보 CSV |
+| **Stage 1** 추출 (카테고리 A 전용) | RFP 공고 (HTML/HWP/PDF/DOCX/RTF) | 문장 후보 + 요구사항 후보 CSV |
 | **Stage 2** 정의 | — | **19종** 한국어 smell taxonomy (Paska + IEEE 830 / ISO 29148 / INCOSE / EARS / CMMI / NCS) |
 | **Stage 3** 탐지 | 요구사항 후보 | 5 detector + 앙상블 라벨 |
 | **Stage 4** 평가 | 라벨 + (선택) gold label | Precision/Recall/F1/Kappa + 리포트 6종 |
