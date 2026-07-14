@@ -1,0 +1,84 @@
+# KoSmell taxonomy — Paska 9종 + ISO 29148 작성 원칙 기반 한국어 요구사항 스멜
+version: "1.0"
+provenance: "Paska (Veizaga et al.) 9 smells + ISO/IEC/IEEE 29148 requirement writing principles"
+excluded:
+  - paska: "Incorrect order"
+    reason: "영어 Rimay 절 순서 규칙은 한국어 SOV 어순에서 통사적 등가 부재"
+
+smells:
+  - code: K1
+    name_ko: "복합 요구사항"
+    paska: "Non-atomic requirement"
+    iso29148: "Singular"
+    definition: "하나의 요구사항 행에 둘 이상의 독립 기능·의무가 결합된 경우"
+    impl_scode: S1
+
+  - code: K2
+    name_ko: "불완전 명세"
+    paska: "Incomplete requirement"
+    iso29148: "Complete"
+    definition: "행위·대상·결과 중 하나 이상이 생략되어 문장이 자립적으로 완결되지 않는 경우"
+    impl_scode: S2
+
+  - code: K3
+    name_ko: "주체·시스템 응답 누락"
+    paska: "Incomplete system response"
+    iso29148: "Complete"
+    definition: "수행 주체 또는 시스템의 응답이 명시되지 않은 경우 (한국어 주어 생략 관행)"
+    impl_scode: S5
+
+  - code: K4
+    name_ko: "불완전 조건"
+    paska: "Incomplete condition"
+    iso29148: "Complete, Verifiable"
+    definition: "조건절만 있고 결과·판정 기준이 없는 경우"
+    impl_scode: S10
+
+  - code: K5
+    name_ko: "수동 표현"
+    paska: "Passive voice"
+    iso29148: "Unambiguous"
+    definition: "'~되어야 한다' 등 피동 표현으로 행위 주체가 흐려지는 경우"
+    impl_scode: S9
+
+  - code: K6
+    name_ko: "약한 의무 (부정확 동사)"
+    paska: "Not precise verb"
+    iso29148: "Verifiable"
+    definition: "'한다/된다/함' 평서형 종결로 의무 강도가 불명확한 경우"
+    impl_scode: S4
+
+  - code: K7
+    name_ko: "결합 범위 모호"
+    paska: "Coordination ambiguity"
+    iso29148: "Unambiguous"
+    definition: "'및/또는', '등' 열거로 적용 범위가 불명확한 경우"
+    impl_scode: S8
+
+  - code: K8
+    name_ko: "비요구사항"
+    paska: "Not requirement"
+    iso29148: "Necessary, Appropriate"
+    definition: "요구사항이 아닌 서술(목차·안내·배경 설명 등)이 요구사항 행에 기재된 경우"
+    impl_scode: null   # 전용 휴리스틱 (run_stage1.py: 의무·기능 서술 부재 판정)
+
+  - code: K9
+    name_ko: "모호어"
+    paska: null
+    iso29148: "Unambiguous"
+    definition: "'적절한', '필요한', '실시간' 등 판정 기준 없는 수식어"
+    impl_scode: S3
+
+  - code: K10
+    name_ko: "정량 부재"
+    paska: null
+    iso29148: "Verifiable, Measurable"
+    definition: "성능·용량·시간 속성에 수치 기준이 없는 경우"
+    impl_scode: S6
+
+  - code: K11
+    name_ko: "미정의 약어"
+    paska: null
+    iso29148: "Unambiguous, Complete"
+    definition: "영문 약어가 문서 내 정의 없이 사용된 경우"
+    impl_scode: S7
