@@ -1,0 +1,110 @@
+{
+  "n_paired": 300,
+  "llm_file": "stage2_labels__gpt-4o.csv",
+  "per_smell": {
+    "K1": {
+      "agreement_pct": 52.7,
+      "kappa": 0.028,
+      "both": 4,
+      "rule_only": 0,
+      "llm_only": 142,
+      "neither": 154,
+      "mcnemar_p": 0.0
+    },
+    "K2": {
+      "agreement_pct": 57.0,
+      "kappa": -0.005,
+      "both": 144,
+      "rule_only": 78,
+      "llm_only": 51,
+      "neither": 27,
+      "mcnemar_p": 0.0217
+    },
+    "K3": {
+      "agreement_pct": 47.3,
+      "kappa": -0.115,
+      "both": 113,
+      "rule_only": 56,
+      "llm_only": 102,
+      "neither": 29,
+      "mcnemar_p": 0.0003
+    },
+    "K4": {
+      "agreement_pct": 94.3,
+      "kappa": -0.017,
+      "both": 0,
+      "rule_only": 14,
+      "llm_only": 3,
+      "neither": 283,
+      "mcnemar_p": 0.0127
+    },
+    "K5": {
+      "agreement_pct": 80.7,
+      "kappa": 0.215,
+      "both": 11,
+      "rule_only": 3,
+      "llm_only": 55,
+      "neither": 231,
+      "mcnemar_p": 0.0
+    },
+    "K6": {
+      "agreement_pct": 75.0,
+      "kappa": 0.445,
+      "both": 58,
+      "rule_only": 10,
+      "llm_only": 65,
+      "neither": 167,
+      "mcnemar_p": 0.0
+    },
+    "K7": {
+      "agreement_pct": 73.0,
+      "kappa": 0.22,
+      "both": 17,
+      "rule_only": 0,
+      "llm_only": 81,
+      "neither": 202,
+      "mcnemar_p": 0.0
+    },
+    "K8": {
+      "agreement_pct": 79.0,
+      "kappa": 0.392,
+      "both": 35,
+      "rule_only": 27,
+      "llm_only": 36,
+      "neither": 202,
+      "mcnemar_p": 0.3135
+    },
+    "K9": {
+      "agreement_pct": 89.7,
+      "kappa": 0.383,
+      "both": 12,
+      "rule_only": 22,
+      "llm_only": 9,
+      "neither": 257,
+      "mcnemar_p": 0.0294
+    },
+    "K10": {
+      "agreement_pct": 89.7,
+      "kappa": 0.155,
+      "both": 4,
+      "rule_only": 21,
+      "llm_only": 10,
+      "neither": 265,
+      "mcnemar_p": 0.0708
+    },
+    "K11": {
+      "agreement_pct": 78.0,
+      "kappa": 0.394,
+      "both": 38,
+      "rule_only": 42,
+      "llm_only": 24,
+      "neither": 196,
+      "mcnemar_p": 0.0356
+    }
+  },
+  "any_smell": {
+    "rule_pct": 91.3,
+    "llm_pct": 99.7,
+    "kappa": -0.006
+  }
+}

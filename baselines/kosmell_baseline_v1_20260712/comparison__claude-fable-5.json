@@ -1,0 +1,110 @@
+{
+  "n_paired": 300,
+  "llm_file": "stage2_labels__claude-fable-5.csv",
+  "per_smell": {
+    "K1": {
+      "agreement_pct": 86.3,
+      "kappa": 0.142,
+      "both": 4,
+      "rule_only": 0,
+      "llm_only": 41,
+      "neither": 255,
+      "mcnemar_p": 0.0
+    },
+    "K2": {
+      "agreement_pct": 58.7,
+      "kappa": 0.001,
+      "both": 151,
+      "rule_only": 71,
+      "llm_only": 53,
+      "neither": 25,
+      "mcnemar_p": 0.1265
+    },
+    "K3": {
+      "agreement_pct": 57.7,
+      "kappa": 0.042,
+      "both": 165,
+      "rule_only": 4,
+      "llm_only": 123,
+      "neither": 8,
+      "mcnemar_p": 0.0
+    },
+    "K4": {
+      "agreement_pct": 95.3,
+      "kappa": 0.0,
+      "both": 0,
+      "rule_only": 14,
+      "llm_only": 0,
+      "neither": 286,
+      "mcnemar_p": 0.0001
+    },
+    "K5": {
+      "agreement_pct": 94.0,
+      "kappa": 0.22,
+      "both": 3,
+      "rule_only": 11,
+      "llm_only": 7,
+      "neither": 279,
+      "mcnemar_p": 0.4807
+    },
+    "K6": {
+      "agreement_pct": 93.0,
+      "kappa": 0.818,
+      "both": 67,
+      "rule_only": 1,
+      "llm_only": 20,
+      "neither": 212,
+      "mcnemar_p": 0.0
+    },
+    "K7": {
+      "agreement_pct": 86.0,
+      "kappa": 0.378,
+      "both": 16,
+      "rule_only": 1,
+      "llm_only": 41,
+      "neither": 242,
+      "mcnemar_p": 0.0
+    },
+    "K8": {
+      "agreement_pct": 77.3,
+      "kappa": 0.376,
+      "both": 37,
+      "rule_only": 25,
+      "llm_only": 43,
+      "neither": 195,
+      "mcnemar_p": 0.0385
+    },
+    "K9": {
+      "agreement_pct": 93.7,
+      "kappa": 0.654,
+      "both": 21,
+      "rule_only": 13,
+      "llm_only": 6,
+      "neither": 260,
+      "mcnemar_p": 0.1671
+    },
+    "K10": {
+      "agreement_pct": 92.0,
+      "kappa": 0.177,
+      "both": 3,
+      "rule_only": 22,
+      "llm_only": 2,
+      "neither": 273,
+      "mcnemar_p": 0.0
+    },
+    "K11": {
+      "agreement_pct": 74.7,
+      "kappa": 0.191,
+      "both": 17,
+      "rule_only": 63,
+      "llm_only": 13,
+      "neither": 207,
+      "mcnemar_p": 0.0
+    }
+  },
+  "any_smell": {
+    "rule_pct": 91.3,
+    "llm_pct": 100.0,
+    "kappa": 0.0
+  }
+}
