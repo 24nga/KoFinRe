@@ -60,14 +60,19 @@ def run_detection(sentences: List[str],
     return out
 
 
-def run_full_pipeline(output_dir: Path,
+def run_report_pipeline(output_dir: Path,
                      extracted_text_per_doc: Dict[str, str],
                      extraction_log: List[Dict[str, Any]],
                      use_llm: bool = False,
                      llm_caller=None,
                      correction: bool = False,
                      llm_corrector=None) -> Dict[str, Any]:
-    """Stage 1 결과를 받아 Stage 2~5 실행.
+    """Stage 1 추출 결과를 받아 탐지(Stage 3)·평가 리포트(Stage 4)를 생성한다.
+
+    NOTE(v2.9.0): 구명칭 run_full_pipeline은 "5-stage 전체 실행"을 암시했으나
+    실제 구현은 Stage 1 산출물 정렬 + Stage 3 탐지 + Stage 4 리포트 중심이다.
+    교정(correction)은 플래그로 노출된 예비 구현이며 논문 범위 외(후속 연구).
+    하위 호환을 위해 run_full_pipeline 별칭을 유지한다.
 
     Args:
         output_dir: 결과 저장 루트
@@ -100,3 +105,7 @@ def run_full_pipeline(output_dir: Path,
     })
 
     return {"output_dir": str(output_dir), "stages_completed": ["1", "4"]}
+
+
+# v2.9.0: honest naming - deprecated alias for backward compatibility
+run_full_pipeline = run_report_pipeline
