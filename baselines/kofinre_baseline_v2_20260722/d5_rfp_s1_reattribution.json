@@ -1,0 +1,15 @@
+{
+  "dataset": "D5 (public RFP 2013, n=10899)",
+  "code_version": "2.9.3",
+  "spec_mode": {
+    "S1": 84,
+    "S18": 2929,
+    "smelly_pct": 85.8
+  },
+  "rfp_mode": {
+    "S1": 31,
+    "S18": 2983,
+    "smelly_pct": 85.8
+  },
+  "s1_reattributed_to_s18": 53
+}

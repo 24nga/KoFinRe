@@ -29,6 +29,8 @@ def main():
     ap.add_argument('--use-llm', action='store_true')
     ap.add_argument('--ensemble', default='rule_priority',
                    choices=['majority', 'rule_priority', 'confidence_weighted'])
+    ap.add_argument('--category', default=None, choices=['rfp', 'spec'],
+                   help="문서 카테고리 — rfp: S1 묶음구조 S18 귀속(v2.9.3), spec: 기존 로직")
     args = ap.parse_args()
 
     args.output.mkdir(parents=True, exist_ok=True)
@@ -36,7 +38,8 @@ def main():
     rows = list(csv.DictReader(open(args.input, encoding='utf-8-sig')))
     sentences = [r.get('sentence', '') for r in rows]
     doc_text = '\n'.join(sentences)
-    ctx = {'undefined_acronyms': collect_undefined_acronyms(doc_text)}
+    ctx = {'undefined_acronyms': collect_undefined_acronyms(doc_text),
+           'category': args.category}
 
     regex = RegexDetector()
     morph = MorphDetector()

@@ -13,6 +13,27 @@
 
 ---
 
+## [2.9.3] — 2026-07-22 — S1 카테고리 조건부 적용 (코드) + baseline v2
+
+### Added
+
+- **S1 카테고리 조건부 로직** (`regex_detector.py`): `doc_context['category']`가 'rfp'일 때
+  묶음 마커(`BUNDLING_MARKER_RE`: 파이프·글머리표·번호 세부항목)가 있는 세부 나열은
+  S1(복합 의무)이 아니라 S18(추적 ID 부재)로 귀속. 'spec'/None은 기존 로직 유지.
+- **`scripts/run_detection.py --category {rfp,spec}`** 옵션
+- **단위 테스트 4건** (TestS1CategoryConditional) — 절내 복합=S1, RFP 묶음=S18 귀속,
+  spec 유지 검증. **테스트 65/65 통과**
+- **`baselines/kofinre_baseline_v2_20260722/`** — 코드 반영 전수 재실행 동결본
+  - D6 spec 재실행: S7 30.4%→32.5%(+2.1, 약어 버그 수정), 나머지 9종 불변
+  - D5 rfp 재실행: S1 84→31건, S18 +54건 (묶음 53건 재귀속), 전체 smelly 불변(85.8%)
+
+### Rationale
+
+- S1 재귀속 효과가 전체 검출률을 바꾸지 않고(결함 제거 아님) 유형만 재분류함을 코드로 실증.
+  §3.2 논거("묶음 자체가 아니라 세부 식별자 부재가 문제")의 실증 근거.
+
+---
+
 ## [2.9.2] — 2026-07-22 — JOK v2.5: D5+D6 중심 재구성 + S1 카테고리 조건부 적용
 
 ### Changed

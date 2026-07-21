@@ -63,3 +63,8 @@ results_d6/
 # KoSmell experiment - files containing sentence text (LOCAL_ONLY)
 experiments/kosmell_paska_llm/stage2_sample.csv
 experiments/kosmell_paska_llm/cache/
+
+# v2.9.3 re-run outputs (may contain sentence text) - LOCAL_ONLY
+results_d6_v2/
+results_d5_v2_rfp/
+results_d5_v2_spec/

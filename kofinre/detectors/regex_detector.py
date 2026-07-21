@@ -99,6 +99,18 @@ WHITELIST = {
 # ───────────────── S10 Unverifiable — 정성 표현 ─────────────────
 QUALITATIVE_RE = re.compile(r'(효율적|효과적|안정적|신뢰성|편리|용이|간편|최적|체계적|원활|유연)')
 
+# ───────────────── 묶음 마커 (S1 카테고리 조건부, v2.9.3) ─────────────────
+# 한 요구사항 ID 아래 세부 항목을 나열하는 구조 신호. 존재 시 이는 '구조적 묶음'
+# 이며, 국제 표준(ISO 29148 Singular=복수 조건 허용, INCOSE/미 SOW 그룹화 허용)에
+# 비추어 그 자체는 S1(복합 의무) 결함이 아니라 세부 식별자 부재(S18) 문제로 귀속한다.
+BUNDLING_MARKER_RE = re.compile(
+    r'\|'                       # 양식 결합 셀 파이프
+    r'|[;；]'                   # 세미콜론 나열
+    r'|[▶▪◦○●◇□■·•\-]\s'       # 글머리표
+    r'|\n\s*[-*]\s'             # 줄바꿈 후 대시/별표 리스트
+    r'|(?:^|\s)\d+[.)]\s'       # 번호 세부 항목 (1. 2) 등)
+)
+
 
 def collect_undefined_acronyms(text: str) -> Set[str]:
     """문서 단위 — 등장 약어 중 정의되지 않은 것."""
@@ -118,11 +130,23 @@ class RegexDetector(BaseDetector):
         res = DetectorResult(sentence=s)
         ctx = doc_context or {}
         undef_acrs = ctx.get('undefined_acronyms', set())
+        # 문서 카테고리: 'rfp'(발주) | 'spec'(정의서) | None. RFP는 1 ID 다세부 묶음이 관행.
+        category = ctx.get('category')
 
-        # S1 Non-atomic — 의무 표현 2회 이상
+        # S1 Non-atomic — 카테고리 조건부 (v2.9.3)
+        # 평가 단위는 세부 요구사항(문장 분리 후). RFP 카테고리에서 묶음 마커가 있으면
+        # 이는 구조적 나열이므로 S1이 아니라 S18(세부 식별자 부재)로 귀속하고,
+        # S1은 분리 후에도 잔존하는 단일 절 내 복합 의무만 검출한다.
         duty_count = len(STRONG_DUTY_RE.findall(s))
-        res.set("S1", duty_count >= 2, Confidence.HIGH if duty_count >= 2 else 0.0,
-                f"의무표현 {duty_count}회")
+        has_bundling = BUNDLING_MARKER_RE.search(s) is not None
+        if category == 'rfp':
+            s1_flag = duty_count >= 2 and not has_bundling
+            s1_note = (f"의무표현 {duty_count}회 (절내 복합)" if s1_flag
+                       else "묶음 구조 → S18 귀속" if (duty_count >= 2 and has_bundling) else "")
+        else:
+            s1_flag = duty_count >= 2
+            s1_note = f"의무표현 {duty_count}회" if s1_flag else ""
+        res.set("S1", s1_flag, Confidence.HIGH if s1_flag else 0.0, s1_note)
 
         # S2 Incomplete — 정밀화: 의무 표현 + 목적 조사 부재 + 동사 명사형도 부재
         has_duty = STRONG_DUTY_RE.search(s) is not None
@@ -247,8 +271,14 @@ class RegexDetector(BaseDetector):
         # 의무 표현이 있고 ID·출처 모두 없으면 추적 곤란
         has_obligation = kp.STRONG_OBLIGATION.search(s) is not None
         missing_trace = has_obligation and not has_id and not has_source
+        # v2.9.3: RFP 카테고리에서 세부 항목이 묶음으로 나열되나 파생 ID가 없으면
+        # 세부 식별자 부재로 S18에 귀속 (S1에서 이관된 결함)
+        s18_note = "ID/출처 부재 + 의무 표현"
+        if category == 'rfp' and has_bundling and has_obligation and not has_id:
+            missing_trace = True
+            s18_note = "세부 항목 묶음 + 파생 ID 부재 (S1→S18 귀속)"
         res.set("S18", missing_trace, Confidence.MEDIUM if missing_trace else 0.0,
-                "ID/출처 부재 + 의무 표현" if missing_trace else "")
+                s18_note if missing_trace else "")
 
         # S19 Constraint-category-unclear — 제약 표현 있으나 카테고리 분류 어려움
         # 의무 표현 + 제약 키워드 있는데 NCS 카테고리 매칭 0 또는 1
