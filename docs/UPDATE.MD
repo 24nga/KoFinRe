@@ -13,6 +13,29 @@
 
 ---
 
+## [2.9.5] — 2026-07-22 — 버전 문자열 정합 + 3-way LLM 비교 완결
+
+### Fixed
+
+- **버전 문자열 단일화** — 심사 대비 정합성 마지막 스트래글러 제거.
+  `pyproject.toml`·`kofinre.__version__`·`smell_taxonomy.yaml`을 모두 **2.9.5**로 통일
+  (직전까지 yaml만 `2.8`로 남아 있었음). taxonomy YAML 헤더에 "스키마 버전은 패키지
+  버전과 동기화한다" 주석 추가로 재발 방지.
+
+### Added
+
+- **`experiments/kosmell_paska_llm/stage2_labels__gemma4_12b.csv`** — KoSmell vs 상용/오픈
+  LLM 판정 비교의 제3 모델(Gemma-4 12B) 라벨 추가. 기존 `claude-fable-5`·`gpt-4o`와 함께
+  3-way(상용 2 + 오픈웨이트 1) 비교 데이터셋 완결.
+
+### Notes
+
+- 리뷰 지적 4개 항목(데이터셋 명명 D-코드 통일 / 버전 정합 / 테스트 60→65 전수 통과 /
+  `run_full_pipeline`→`run_report_pipeline` 개명)은 v2.9.1~v2.9.4에서 이미 반영 완료.
+  본 릴리스는 그중 버전 정합의 마지막 잔여분과 실험 산출물 커밋을 마무리하는 패치.
+
+---
+
 ## [2.9.4] — 2026-07-22 — JOK v2.6: S1 재귀속 검증 소절(§5.7)
 
 ### Added

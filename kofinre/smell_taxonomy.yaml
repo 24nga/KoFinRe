@@ -1,7 +1,8 @@
 # KoFinRe-QA Smell Taxonomy (논문 정의 기반)
-# v2.8 — 19종 (Paska 9 + 한국 특화 + IEEE 830 + ISO/IEC/IEEE 29148 + INCOSE + EARS + CMMI REQM/RD + NCS 5 카테고리)
+# 19종 (Paska 9 + 한국 특화 + IEEE 830 + ISO/IEC/IEEE 29148 + INCOSE + EARS + CMMI REQM/RD + NCS 5 카테고리)
+# 스키마 버전은 패키지 버전(pyproject.toml / kofinre.__version__)과 동기화한다.
 
-version: "2.8"
+version: "2.9.5"
 total_smells: 19
 
 smells:

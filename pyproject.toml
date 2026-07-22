@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "kofinre"
-version = "2.9.0"
+version = "2.9.5"
 description = "Korean Public Financial RFP Quality Analysis Framework"
 readme = "README.md"
 license = { text = "MIT" }
