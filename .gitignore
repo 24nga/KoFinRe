@@ -68,3 +68,7 @@ experiments/kosmell_paska_llm/cache/
 results_d6_v2/
 results_d5_v2_rfp/
 results_d5_v2_spec/
+
+# RFP extraction experiment - segment text (LOCAL_ONLY)
+experiments/rfp_extraction_llm/extraction_sample.csv
+experiments/rfp_extraction_llm/cache/

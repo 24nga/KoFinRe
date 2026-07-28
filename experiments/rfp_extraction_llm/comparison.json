@@ -1,0 +1,74 @@
+{
+  "n": 200,
+  "pairwise": {
+    "rule_vs_gpt": {
+      "agreement_pct": 64.5,
+      "kappa": 0.29,
+      "mcnemar_p": 0.0,
+      "b": 13,
+      "c": 58
+    },
+    "rule_vs_claude": {
+      "agreement_pct": 78.0,
+      "kappa": 0.56,
+      "mcnemar_p": 0.0,
+      "b": 8,
+      "c": 36
+    },
+    "gpt_vs_claude": {
+      "agreement_pct": 84.5,
+      "kappa": 0.645,
+      "mcnemar_p": 0.0033,
+      "b": 24,
+      "c": 7
+    }
+  },
+  "vs_majority": {
+    "rule": {
+      "precision": 0.92,
+      "recall": 0.73,
+      "f1": 0.814,
+      "accuracy": 0.79,
+      "specificity": 0.892,
+      "balanced_acc": 0.811,
+      "mcc": 0.601,
+      "tp": 92,
+      "fp": 8,
+      "fn": 34,
+      "tn": 66
+    },
+    "gpt-4o": {
+      "precision": 0.834,
+      "recall": 0.96,
+      "f1": 0.893,
+      "accuracy": 0.855,
+      "specificity": 0.676,
+      "balanced_acc": 0.818,
+      "mcc": 0.688,
+      "tp": 121,
+      "fp": 24,
+      "fn": 5,
+      "tn": 50
+    },
+    "claude": {
+      "precision": 0.984,
+      "recall": 1.0,
+      "f1": 0.992,
+      "accuracy": 0.99,
+      "specificity": 0.973,
+      "balanced_acc": 0.986,
+      "mcc": 0.979,
+      "tp": 126,
+      "fp": 2,
+      "fn": 0,
+      "tn": 72
+    }
+  },
+  "agreement": {
+    "unanimous_pct": 63.5,
+    "majority_positive": 126,
+    "rule_pos": 100,
+    "gpt_pos": 145,
+    "claude_pos": 128
+  }
+}
