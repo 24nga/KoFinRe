@@ -1,0 +1,48 @@
+{
+  "gold_source": {
+    "consensus": 129,
+    "adjudicated": 71
+  },
+  "gold_positives": 125,
+  "vs_gold": {
+    "rule": {
+      "precision": 0.91,
+      "recall": 0.728,
+      "f1": 0.809,
+      "accuracy": 0.785,
+      "specificity": 0.88,
+      "balanced_acc": 0.804,
+      "mcc": 0.589,
+      "tp": 91,
+      "fp": 9,
+      "fn": 34,
+      "tn": 66
+    },
+    "gpt-4o": {
+      "precision": 0.834,
+      "recall": 0.968,
+      "f1": 0.896,
+      "accuracy": 0.86,
+      "specificity": 0.68,
+      "balanced_acc": 0.824,
+      "mcc": 0.703,
+      "tp": 121,
+      "fp": 24,
+      "fn": 4,
+      "tn": 51
+    },
+    "claude": {
+      "precision": 0.977,
+      "recall": 1.0,
+      "f1": 0.988,
+      "accuracy": 0.985,
+      "specificity": 0.96,
+      "balanced_acc": 0.98,
+      "mcc": 0.968,
+      "tp": 125,
+      "fp": 3,
+      "fn": 0,
+      "tn": 72
+    }
+  }
+}
