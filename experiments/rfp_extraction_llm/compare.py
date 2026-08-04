@@ -19,7 +19,7 @@ def load(fn, key):
 
 rule = load('extraction_sample.csv', 'rule_label')
 gpt = load('llm_labels__gpt-4o.csv', 'llm_label')
-cla = load('llm_labels__claude-fable-5.csv', 'llm_label')
+cla = load('llm_labels__claude-sonnet-4-5-20250929.csv', 'llm_label')
 ids = sorted(set(rule) & set(gpt) & set(cla), key=lambda x:int(x[1:]))
 print(f'paired: {len(ids)}')
 

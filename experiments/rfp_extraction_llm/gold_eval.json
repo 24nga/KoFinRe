@@ -32,17 +32,17 @@
       "tn": 51
     },
     "claude": {
-      "precision": 0.977,
-      "recall": 1.0,
-      "f1": 0.988,
-      "accuracy": 0.985,
-      "specificity": 0.96,
-      "balanced_acc": 0.98,
-      "mcc": 0.968,
-      "tp": 125,
-      "fp": 3,
-      "fn": 0,
-      "tn": 72
+      "precision": 0.756,
+      "recall": 0.992,
+      "f1": 0.858,
+      "accuracy": 0.795,
+      "specificity": 0.467,
+      "balanced_acc": 0.729,
+      "mcc": 0.578,
+      "tp": 124,
+      "fp": 40,
+      "fn": 1,
+      "tn": 35
     }
   }
 }

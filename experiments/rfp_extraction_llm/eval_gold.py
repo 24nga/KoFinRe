@@ -13,7 +13,7 @@ H=Path(__file__).resolve().parent
 sample={r['seg_id']:r for r in csv.DictReader(open(H/'extraction_sample.csv',encoding='utf-8-sig'))}
 rule={s:int(sample[s]['rule_label']) for s in sample}
 gpt={r['seg_id']:int(r['llm_label']) for r in csv.DictReader(open(H/'llm_labels__gpt-4o.csv',encoding='utf-8-sig'))}
-cla={r['seg_id']:int(r['llm_label']) for r in csv.DictReader(open(H/'llm_labels__claude-fable-5.csv',encoding='utf-8-sig'))}
+cla={r['seg_id']:int(r['llm_label']) for r in csv.DictReader(open(H/'llm_labels__claude-sonnet-4-5-20250929.csv',encoding='utf-8-sig'))}
 adj={r['seg_id']:int(r['gold']) for r in csv.DictReader(open(H/'adjudication.csv',encoding='utf-8-sig'))}
 
 ids=sorted(sample,key=lambda x:int(x[1:]))
